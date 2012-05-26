@@ -11,6 +11,16 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+/**
+ * La classe DictionaryManager fa da ponte tra i dati contenuti in un oggetto
+ * DictionaryData, e l'interfaccia grafica.
+ * 
+ * @author Davide Valsecchi
+ * @since v.0.0.0
+ * @versione v.0.0.0
+ * @see com.valsecchi.ChunksManager.DictionaryData
+ * 
+ */
 public class DictionaryManager {
 
 	private Path path;
@@ -23,9 +33,14 @@ public class DictionaryManager {
 
 	/**
 	 * Costruttore dell'oggetto DictionaryManager
-	 * @param _mode parametro che indica la modalità di utilizzo del manager {@link #OFFLINE_MODE} o {@link #ONLINE_MODE}
-	 * @param name nome del dizionario
-	 * @param _path percorso del dizionario
+	 * 
+	 * @param _mode
+	 *            parametro che indica la modalità di utilizzo del manager
+	 *            {@link #OFFLINE_MODE} o {@link #ONLINE_MODE}
+	 * @param name
+	 *            nome del dizionario
+	 * @param _path
+	 *            percorso del dizionario
 	 */
 	public DictionaryManager(int _mode, String name, Path _path) {
 		buffer = new HashMap<>();
@@ -35,9 +50,20 @@ public class DictionaryManager {
 		// si crea l'oggetto che gestisce i dati
 		data = new DictionaryData(path);
 	}
-	
-	
-	
+
+	/**
+	 * Metodo che carica il database il memoria nell'oggetto {@link #data}
+	 * 
+	 * @return True se l'operazione va a buon fine
+	 * @throws IOException
+	 *             se ci sono problemi nella lettura del file dizionario viene
+	 *             lanciata l'eccezione
+	 */
+	public boolean loadDictionary() throws IOException {
+		return this.data.loadData();
+	}
+
+
 	/**
 	 * Metodo che crea un nuovo dizionario.
 	 * 

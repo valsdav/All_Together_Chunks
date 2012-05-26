@@ -30,7 +30,8 @@ import com.valsecchi.ChunksManager.Definition;
  * dizionario.
  * 
  * @author Davide Valsecchi
- * @version 1.0
+ * @version v.0.0.0
+ * @since v.0.0.0
  * @see com.valsecchi.ChunksManager.DictionaryManager
  * 
  */
@@ -489,10 +490,13 @@ public class DictionaryData {
 	}
 
 	/**
-	 * Metodo pubblico che ricerca tra i chunks specificando tre parametri:pattern,type e unit.
-	 * Questo metodo apponggiandosi a {@link #getChunksByWord(String)}, {@link #getChunksByType(Collection, String)},
-	 * {@link #getChunksByUnit(Collection, String)}, ricerca i chunk corrispondenti.
-	 * 	 * 
+	 * Metodo pubblico che ricerca tra i chunks specificando tre
+	 * parametri:pattern,type e unit. Questo metodo apponggiandosi a
+	 * {@link #getChunksByWord(String)},
+	 * {@link #getChunksByType(Collection, String)},
+	 * {@link #getChunksByUnit(Collection, String)}, ricerca i chunk
+	 * corrispondenti. *
+	 * 
 	 * @param pattern
 	 *            si riferisce alla parola del chunk da cercare
 	 * @param type
@@ -502,7 +506,8 @@ public class DictionaryData {
 	 * @return ritorna una lista di chunk che corrispondono ai criteri di
 	 *         ricerca.
 	 */
-	public List<Chunk> getChunksWithArguments(String pattern, String type,String unit) {
+	public List<Chunk> getChunksWithArguments(String pattern, String type,
+			String unit) {
 		// prima si controlla se il pattern è nullo
 		if (pattern == null) {
 			// allora si controlla il type
