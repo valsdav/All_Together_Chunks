@@ -9,8 +9,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.valsecchi.ChunksManager.*;
+
 import static java.lang.System.out;
 
 /**
@@ -24,9 +29,18 @@ import static java.lang.System.out;
 public class AllTogetherChunksCommandLine {
 
 	/**
+	 * Oggetto DictionaryManager indispensanile per le operazioni sul dizionario
+	 */
+	private static DictionaryManager dictionary;
+	/**
 	 * Variabile che memorizza il comando help
 	 */
 	private static final String HELP = "help";
+	/**
+	 * Vabiabile che memorizza il comando open, che serve per caricare il
+	 * dizionario
+	 */
+	private static final String OPEN_DICTIONARY = "open";
 	/**
 	 * Variabile che memorizza il comando find
 	 */
@@ -35,20 +49,26 @@ public class AllTogetherChunksCommandLine {
 	 * Variabile che memorizza il comando exit
 	 */
 	private static final String EXIT = "exit";
-	
+	/**
+	 * Variabile che indica se un dizionario è stato caricato
+	 */
+	private static boolean dictLoaded = false;
+
 	/**
 	 * Array di stringhe che contiene i vari comandi che saranno poi inseriti in
 	 * {@link #COMMANDS_MAP}
 	 */
-	private static final String[] COMMANDS_LIST = { HELP, FIND,EXIT };
+	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
+			FIND, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_INSTR = {
-			"help + command: display instructions for command",
-			"find +word +type +unit: search a chunk that contains that word, that it's of that type and unit",
-			"exit: program will terminate"};
+			"help +command: displays instructions for command",
+			"open +path:loads the Chunks Dictionary in path",
+			"find +word +type +unit: searches a chunk that contains that word, that it's of that type and unit",
+			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
 	 * documentazione.
@@ -66,8 +86,8 @@ public class AllTogetherChunksCommandLine {
 		// si caricano i comandi
 		setupInstructions();
 
-		out.println("Benvenuti nel programma All Together Chunks!\nDigitare "
-				+ "un comando e help per una lista dei comandi disponibili...");
+		out.println("Welcome to All Together Chunks!\nEnter a command to start "
+				+ "or enter help for a list of all commands available...");
 
 		// viene creato il lettore dell'input della console
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -91,8 +111,13 @@ public class AllTogetherChunksCommandLine {
 				if (cmds.size() > 1) {
 					// si ricava il comando di cui si vuole l'help
 					String cmd2 = cmds.get(1);
-					out.println("-->  " + cmd2 + " >>> "
-							+ COMMANDS_MAP.get(cmd2));
+					if (COMMANDS_MAP.containsKey(cmd2)) {
+						out.println("-->  " + cmd2 + " >>> "
+								+ COMMANDS_MAP.get(cmd2));
+					} else {
+						// se non c'è il comando si scrive
+						out.println("Command not founded!");
+					}
 
 				} else {
 					// allora bisogna scrivere tutti i comandi a schermo con
@@ -105,6 +130,36 @@ public class AllTogetherChunksCommandLine {
 				}
 
 			}
+			case OPEN_DICTIONARY: {
+				// si ricava la seconda parte del comando se no si inserisce
+				// errore
+				if (cmds.size() > 1) {
+					// si ricava il comando di cui si vuole l'help
+					String cmd2 = cmds.get(1);
+					// si ricava la path
+					Path file = Paths.get(cmd2);
+					// si controlla che esiste
+					if (Files.exists(file)) {
+						// esiste si carica il dizionario
+						//di default è in modalità online
+						dictionary = new DictionaryManager(
+								DictionaryManager.ONLINE_MODE,
+								file.getFileName().toString(), file);
+						out.println("Dictionary Loaded!");
+						//si imposta che il dizionario è stato caricato
+						dictLoaded = true;
+					}
+					else{
+						out.println("File not founded!");
+					}
+				} else {
+					out.println("Please enter 'open +path' to load a dictionary...");
+				}
+				break;
+			}
+			default:
+				out.println("Command not founded!");
+				break;
 			}
 		}
 	}
