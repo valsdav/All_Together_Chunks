@@ -509,11 +509,11 @@ public class DictionaryData {
 	public List<Chunk> getChunksWithArguments(String pattern, String type,
 			String unit) {
 		// prima si controlla se il pattern è nullo
-		if (pattern == null) {
+		if (pattern.equals("")) {
 			// allora si controlla il type
-			if (type == null) {
+			if (type.equals("")) {
 				// ora si controlla l'unità
-				if (unit == null) {
+				if (unit.equals("")) {
 					// allora si restituiscono tutti i chunk
 					return this.getAllChunk();
 				} else {
@@ -526,7 +526,7 @@ public class DictionaryData {
 				List<Chunk> temp1 = this.getChunksByType(
 						this.chunksMap.values(), type);
 				// si controlla l'unit
-				if (unit == null) {
+				if (unit.equals("")) {
 					// si esce
 					return temp1;
 				} else {
@@ -539,9 +539,9 @@ public class DictionaryData {
 			// nome
 			List<Chunk> temp = this.getChunksByWord(pattern);
 			// poi si controlla come sopra
-			if (type == null) {
+			if (type .equals("")) {
 				// ora si controlla l'unità
-				if (unit == null) {
+				if (unit .equals("")) {
 					// allora si restituiscono i chunks in temp
 					return temp;
 				} else {
@@ -553,7 +553,7 @@ public class DictionaryData {
 				// si ricerca per tipo
 				List<Chunk> temp2 = this.getChunksByType(temp, type);
 				// si controlla l'unit
-				if (unit == null) {
+				if (unit .equals("")) {
 					// si ritorna temp2
 					return temp2;
 				} else {

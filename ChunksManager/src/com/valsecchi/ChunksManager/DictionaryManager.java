@@ -109,6 +109,10 @@ public class DictionaryManager {
 	public String[] findChunk(String pattern, String type, String unit) {
 		// si cerca con data
 		List<Chunk> result = data.getChunksWithArguments(pattern, type, unit);
+		//si controlla che non sia vuoto
+		if(result== null || result.size()==0){
+			return null;
+		}
 		// si svuota il buffer
 		buffer.clear();
 		// si aggiungono al buffer le coppie word/Chunk in modo tale che si
