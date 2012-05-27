@@ -193,6 +193,14 @@ public class AllTogetherChunksCommandLine {
 			}
 			case DEFIN:
 			{
+				String wordToSearch = "";
+				if (cmds.size() > 1) {
+					// si ricava la parola di cui si vuole la definizione
+					wordToSearch = cmds.get(1);}
+				else{
+					out.println("Missing word! Write 'definition +word'");
+					continue;
+				}
 				// si contralla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a " +
@@ -200,7 +208,14 @@ public class AllTogetherChunksCommandLine {
 					continue;
 				}
 				//si ricavano le definizioni
-//				List<String> defs = dictionary.ge
+				List<String> defs = dictionary.getDefinitions(wordToSearch);
+				if(defs!=null){
+					for(String s :defs){
+						out.println("    -- " + s);
+					}
+				}else{
+					out.println("Chunk not founded!");
+				}
 				break;
 			}
 			default:
