@@ -96,6 +96,7 @@ public class AllTogetherChunksCommandLine {
 		String command = "";
 		// inizio loop
 		while (canContinue) {
+			out.print(">>>");
 			command = reader.readLine();
 			// si divide il comando nelle sue parti
 			StringTokenizer tok = new StringTokenizer(command);
@@ -170,6 +171,10 @@ public class AllTogetherChunksCommandLine {
 				//si ricavano i chunk trovati
 				String[] results = dictionary.findChunk(pattern, type, unit);
 				//si mostrano
+				if(results == null || results.length== 0){
+					out.println("No Chunk Matches...");
+					continue;
+				}
 				for(String r :results){
 					out.println("\t-- " +r);
 				}
