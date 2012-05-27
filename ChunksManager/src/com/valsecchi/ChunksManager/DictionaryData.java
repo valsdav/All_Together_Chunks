@@ -435,7 +435,7 @@ public class DictionaryData {
 		// lista in cui inserire i risultati
 		List<Chunk> results = new ArrayList<>();
 		for (Chunk ck : this.chunksMap.values()) {
-			if (ck.getWord().matches(pattern)) {
+			if (ck.getWord().contains(pattern)) {
 				results.add(ck);
 			}
 		}
