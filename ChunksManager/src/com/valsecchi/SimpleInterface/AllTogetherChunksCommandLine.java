@@ -142,17 +142,16 @@ public class AllTogetherChunksCommandLine {
 					// si controlla che esiste
 					if (Files.exists(file)) {
 						// esiste si carica il dizionario
-						//di default è in modalità online
+						// di default è in modalità online
 						dictionary = new DictionaryManager(
-								DictionaryManager.ONLINE_MODE,
-								file.getFileName().toString(), file);
-						//ora si carica
+								DictionaryManager.ONLINE_MODE, file
+										.getFileName().toString(), file);
+						// ora si carica
 						dictionary.loadDictionary();
 						out.println("Dictionary Loaded!");
-						//si imposta che il dizionario è stato caricato
+						// si imposta che il dizionario è stato caricato
 						dictLoaded = true;
-					}
-					else{
+					} else {
 						out.println("File not founded!");
 					}
 				} else {
@@ -160,23 +159,29 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case FIND:{
-				//si richiede la parola
+			case FIND: {
+				// si contralla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a " +
+							"dictionary. Please open a dictionary with 'open +path");
+					continue;
+				}
+				// si richiede la parola
 				out.print("--> pattern:  ");
 				String pattern = reader.readLine();
-				out.print("--> type:  ") ;
+				out.print("--> type:  ");
 				String type = reader.readLine();
 				out.print("--> unit:  ");
 				String unit = reader.readLine();
-				//si ricavano i chunk trovati
+				// si ricavano i chunk trovati
 				String[] results = dictionary.findChunk(pattern, type, unit);
-				//si mostrano
-				if(results == null || results.length== 0){
+				// si mostrano
+				if (results == null || results.length == 0) {
 					out.println("No Chunk Matches...");
 					continue;
 				}
-				for(String r :results){
-					out.println("\t-- " +r);
+				for (String r : results) {
+					out.println("\t-- " + r);
 				}
 			}
 			default:
