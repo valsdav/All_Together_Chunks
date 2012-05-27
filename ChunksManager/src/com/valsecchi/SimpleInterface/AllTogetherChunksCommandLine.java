@@ -145,6 +145,8 @@ public class AllTogetherChunksCommandLine {
 						dictionary = new DictionaryManager(
 								DictionaryManager.ONLINE_MODE,
 								file.getFileName().toString(), file);
+						//ora si carica
+						dictionary.loadDictionary();
 						out.println("Dictionary Loaded!");
 						//si imposta che il dizionario è stato caricato
 						dictLoaded = true;
@@ -156,6 +158,21 @@ public class AllTogetherChunksCommandLine {
 					out.println("Please enter 'open +path' to load a dictionary...");
 				}
 				break;
+			}
+			case FIND:{
+				//si richiede la parola
+				out.print("--> pattern:  ");
+				String pattern = reader.readLine();
+				out.print("--> type:  ") ;
+				String type = reader.readLine();
+				out.print("--> unit:  ");
+				String unit = reader.readLine();
+				//si ricavano i chunk trovati
+				String[] results = dictionary.findChunk(pattern, type, unit);
+				//si mostrano
+				for(String r :results){
+					out.println("\t-- " +r);
+				}
 			}
 			default:
 				out.println("Command not founded!");
