@@ -102,11 +102,11 @@ public class DictionaryManager {
 	 *            tipo dei chunk da cercare
 	 * @param unit
 	 *            unit dei chunk da cercare
-	 * @return restituisce un array di stringhe, i chunks trovati, le altre
+	 * @return restituisce una lista di stringhe. I chunks trovati, le altre
 	 *         informazioni sono ricavabili con il metodo
 	 *         {@link #getChunkAttributes(String)}
 	 */
-	public String[] findChunk(String pattern, String type, String unit) {
+	public List<String> findChunk(String pattern, String type, String unit) {
 		// si cerca con data
 		List<Chunk> result = data.getChunksWithArguments(pattern, type, unit);
 		//si controlla che non sia vuoto
@@ -127,7 +127,7 @@ public class DictionaryManager {
 			words.add(k.getWord());
 		}
 		// si restituisce il risultato
-		return (String[]) words.toArray();
+		return words;
 	}
 
 	/**
