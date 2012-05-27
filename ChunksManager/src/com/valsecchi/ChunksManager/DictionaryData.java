@@ -96,7 +96,7 @@ public class DictionaryData {
 			type = chu.getChildText("type");
 			unit = chu.getChildText("unit");
 
-			Chunk newChunk = new Chunk(hash, type, unit, word);
+			Chunk newChunk = new Chunk(word,hash, type, unit);
 			// si aggiunge alla mappa
 			this.chunksMap.put(hash, newChunk);
 		}
