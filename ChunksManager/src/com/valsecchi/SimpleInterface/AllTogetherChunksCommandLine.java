@@ -174,15 +174,17 @@ public class AllTogetherChunksCommandLine {
 				out.print("--> unit:  ");
 				String unit = reader.readLine();
 				// si ricavano i chunk trovati
-				String[] results = dictionary.findChunk(pattern, type, unit);
+				List<String> results = dictionary.findChunk(pattern, type, unit);
 				// si mostrano
-				if (results == null || results.length == 0) {
+				if (results == null || results.size()== 0) {
 					out.println("No Chunk Matches...");
 					continue;
 				}
 				for (String r : results) {
-					out.println("\t-- " + r);
+					out.println("    -- " + r);
 				}
+				out.println("N° of Chunks:  " + results.size());
+				break;				
 			}
 			default:
 				out.println("Command not founded!");
