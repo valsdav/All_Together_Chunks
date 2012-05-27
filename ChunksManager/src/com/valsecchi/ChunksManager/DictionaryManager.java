@@ -129,7 +129,44 @@ public class DictionaryManager {
 		// si restituisce il risultato
 		return words;
 	}
-
+	
+	/**
+	 * Metodo che ricerca nei dati con {@link #data} le definizioni di una certa parola.
+	 * Il metodo prima controlla se la parola è memorizzata già in buffer (questa è la situazione più favorevole
+	 * perchè il chunk è già disponibile; se non è in buffer, il metodo ricava il chunk da {@link #data} con in metodo 
+	 * {@link com.valsecchi.ChunksManager.DictionaryData#getChunksByWord(String)}.
+	 * @param word parola di cui cercare le definizioni
+	 * @return ritorna la lista di definizioni, null se il chunk non esiste
+	 */
+	public List<String> getDefinitions(String word){
+		//lista di definizioni
+		List<Definition> def = new ArrayList<>();
+		//si controlla che sia nel buffer
+		if(this.buffer.containsKey(word)){
+			//allora si ricavano le definizioni
+			def = data.getDefinitions(this.buffer.get(word));
+		}else
+		{
+			//si ricava il chunk
+			Chunk c = data.getChunkBySpecificWord(word);
+			//si controlla che esista
+			if(c==null){
+				return null;
+			}else{
+				//si aggiunge al buffer
+				this.buffer.put(c.getWord(),c);
+				//si cercano le definizioni
+				def= data.getDefinitions(c);
+			}
+		}
+		//si rielaborano le definizioni in stringhe
+		List<String> defs = new ArrayList<>();
+		for(Definition d : def){
+			defs.add(d.getText());
+		}
+		return defs;
+	}
+	
 	/**
 	 * Il metodo restituisce al client gli attributi di un chunk, accettando
 	 * come parametro la word del chunk. Infatti grazie al buffer, viene
