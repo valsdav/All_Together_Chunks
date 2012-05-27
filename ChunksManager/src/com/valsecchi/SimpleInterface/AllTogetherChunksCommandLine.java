@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,25 +23,37 @@ import static java.lang.System.out;
  */
 public class AllTogetherChunksCommandLine {
 
-	// singoli comandi
+	/**
+	 * Variabile che memorizza il comando help
+	 */
 	private static final String HELP = "help";
+	/**
+	 * Variabile che memorizza il comando find
+	 */
 	private static final String FIND = "find";
+	/**
+	 * Variabile che memorizza il comando exit
+	 */
+	private static final String EXIT = "exit";
+	
 	/**
 	 * Array di stringhe che contiene i vari comandi che saranno poi inseriti in
 	 * {@link #COMMANDS_MAP}
 	 */
-	private static final String[] COMMANDS_LIST = { HELP, FIND };
+	private static final String[] COMMANDS_LIST = { HELP, FIND,EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
 	 */
-	private static final String[] COMMANDS_INSTR = { "richiede aiuto",
-			"aggiunge un chunk" };
+	private static final String[] COMMANDS_INSTR = {
+			"help + command: display instructions for command",
+			"find +word +type +unit: search a chunk that contains that word, that it's of that type and unit",
+			"exit: program will terminate"};
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
 	 * documentazione.
 	 */
-	private static Map<String, String> COMMANDS_MAP;
+	private static Map<String, String> COMMANDS_MAP = new HashMap<String, String>();
 	/**
 	 * Variabile che ferma il loop del programma
 	 */
@@ -50,9 +63,9 @@ public class AllTogetherChunksCommandLine {
 	 * Loop continuo del programma che interpreta ed esegue i comandi
 	 */
 	public static void main(String[] args) throws IOException {
-		//si caricano i comandi
+		// si caricano i comandi
 		setupInstructions();
-		
+
 		out.println("Benvenuti nel programma All Together Chunks!\nDigitare "
 				+ "un comando e help per una lista dei comandi disponibili...");
 
@@ -76,12 +89,18 @@ public class AllTogetherChunksCommandLine {
 			case HELP: {
 				// si controlla quale comando segue help
 				if (cmds.size() > 1) {
+					// si ricava il comando di cui si vuole l'help
+					String cmd2 = cmds.get(1);
+					out.println("-->  " + cmd2 + " >>> "
+							+ COMMANDS_MAP.get(cmd2));
 
 				} else {
 					// allora bisogna scrivere tutti i comandi a schermo con
 					// relative istruzioni
-					for(int i = 0; i<= COMMANDS_MAP.size();i++){
-//						out.println(COMMANDS_MAP.keySet().,COMMANDS_MAP.values()[i]);
+					for (int i = 0; i < COMMANDS_MAP.size(); i++) {
+						out.println("-->  "
+								+ COMMANDS_MAP.keySet().toArray()[i] + " >>> "
+								+ COMMANDS_MAP.values().toArray()[i]);
 					}
 				}
 
@@ -89,12 +108,13 @@ public class AllTogetherChunksCommandLine {
 			}
 		}
 	}
-	
+
 	/**
-	 * Il metodo inserisce in {@link #COMMANDS_MAP} tutti i comandi con relative istruzioni
+	 * Il metodo inserisce in {@link #COMMANDS_MAP} tutti i comandi con relative
+	 * istruzioni
 	 */
-	private static void setupInstructions(){
-		for(int i= 0; i<= COMMANDS_LIST.length;i++){
+	private static void setupInstructions() {
+		for (int i = 0; i < COMMANDS_LIST.length; i++) {
 			COMMANDS_MAP.put(COMMANDS_LIST[i], COMMANDS_INSTR[i]);
 		}
 	}
