@@ -419,11 +419,30 @@ public class DictionaryData {
 	}
 
 	/**
+	 * Il metodo effettua una ricerca fra i chunks come {@link #getChunksByWord(String)}, ma restituisce solo il chunk 
+	 * la cui parola è esattamente uguale al parametro.
+	 * @param word parola del chunk da cercare
+	 * @return ritorna il chunk se trovato, se no null
+	 */
+	public Chunk getChunkBySpecificWord(String word){
+		Chunk result = null;
+		for (Chunk ck : this.chunksMap.values()) {
+			//da notare l'uso di equals e non contains
+			if (ck.getWord().equals(word)) {
+				result = ck;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	/**
 	 * Metodo public che effettua una ricerca tra i vari chunk e restituisce
 	 * quelli che contengono il pattern specificato. La ricerca viene effettuata
 	 * solo sulla parola che caratterizza il chunk. Il metodo viene lasciato
 	 * public perchè è di comodo utilizzo e accessibile dall'esterno senza
-	 * riferimenti ai dati interni;
+	 * riferimenti ai dati interni.
+	 * La ricerca non controlla l'identità dell'eguaglianza ma solo se pattern è contenuto
 	 * 
 	 * @param pattern
 	 *            filtro da confrontare con i chunks per la ricerca. Il filtro
@@ -603,7 +622,7 @@ public class DictionaryData {
 	/**
 	 * Metodo che restituisce un array di Definition che hanno un certo codice
 	 * hash. Differente da {@link #getDefinition(String)} poichè questo metodo
-	 * accetta un argomento di tipo Chunk.
+	 * accetta un argomento di tipo Chunk. Almeno una definizione è sempre presente.
 	 * 
 	 * @param chunk
 	 *            Chunk per la ricerca.
@@ -615,7 +634,7 @@ public class DictionaryData {
 
 	/**
 	 * Metodo che restituisce un array di Definition che hanno un certo codice
-	 * hash
+	 * hash. Almeno una definizione è sempre presente.
 	 * 
 	 * @param hash
 	 *            codice hash per il confronto
