@@ -63,6 +63,19 @@ public class DictionaryManager {
 		return this.data.loadData();
 	}
 
+	/**
+	 * Metodo che aggiunge un Chunk alla banca dati del dizionario.
+	 * @param word parola del chunk da aggiungere
+	 * @param type tipo del chunk da aggiungere
+	 * @param unit unità del chunk da aggiungere
+	 * @return ritorna True se il chunk è stato aggiunto correttamente
+	 */
+	public boolean addChunk(String word, String type, String unit) {
+		// si crea un oggetto chunk da aggiungere
+		Chunk newC = new Chunk(word, type, unit);
+		// si aggiunge
+		return data.addChunk(newC);
+	}
 
 	/**
 	 * Metodo che crea un nuovo dizionario.

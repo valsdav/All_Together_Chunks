@@ -273,7 +273,7 @@ public class DictionaryData {
 	 * 
 	 * @param chunk_to_add
 	 *            chunk da aggiungere
-	 * @return
+	 * @return ritorna True se il chunk è stato aggiunto correttamente
 	 */
 	public boolean addChunk(Chunk chunk_to_add) {
 		// si controlla prima che non esista già
