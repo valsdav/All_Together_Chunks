@@ -46,6 +46,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String FIND = "find";
 	/**
+	 * Variabile che memorizza il comando definition
+	 */
+	private static final String DEFIN = "definition";
+	/**
 	 * Variabile che memorizza il comando exit
 	 */
 	private static final String EXIT = "exit";
@@ -59,7 +63,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			FIND, EXIT };
+			FIND,DEFIN, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -68,6 +72,7 @@ public class AllTogetherChunksCommandLine {
 			"help +command: displays instructions for command",
 			"open +path:loads the Chunks Dictionary in path",
 			"find +word +type +unit: searches a chunk that contains that word, that it's of that type and unit",
+			"definition +word: diplays the definitions of the given word",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
@@ -185,6 +190,18 @@ public class AllTogetherChunksCommandLine {
 				}
 				out.println("N° of Chunks:  " + results.size());
 				break;				
+			}
+			case DEFIN:
+			{
+				// si contralla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a " +
+							"dictionary. Please open a dictionary with 'open +path");
+					continue;
+				}
+				//si ricavano le definizioni
+//				List<String> defs = dictionary.ge
+				break;
 			}
 			default:
 				out.println("Command not founded!");
