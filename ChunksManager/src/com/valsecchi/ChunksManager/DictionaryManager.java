@@ -1,8 +1,10 @@
 package com.valsecchi.ChunksManager;
 
+import java.util.List;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +27,11 @@ public class DictionaryManager {
 
 	private Path path;
 	private DictionaryData data;
-	private Map<String, String> buffer;
+	/**
+	 * buffer mappa che contiene le coppie di word/Chunk per mantenere in
+	 * memoria i chunk trovati con la ricerca
+	 */
+	private Map<String, Chunk> buffer;
 	private String dictName;
 	private int mode;
 	public static final int OFFLINE_MODE = 1;
@@ -63,6 +69,83 @@ public class DictionaryManager {
 		return this.data.loadData();
 	}
 
+	/**
+	 * Metodo che aggiunge un Chunk alla banca dati del dizionario.
+	 * 
+	 * @param word
+	 *            parola del chunk da aggiungere
+	 * @param type
+	 *            tipo del chunk da aggiungere
+	 * @param unit
+	 *            unità del chunk da aggiungere
+	 * @return ritorna True se il chunk è stato aggiunto correttamente
+	 */
+	public boolean addChunk(String word, String type, String unit) {
+		// si crea un oggetto chunk da aggiungere
+		Chunk newC = new Chunk(word, type, unit);
+		// si aggiunge
+		return data.addChunk(newC);
+	}
+
+	/**
+	 * Il metodo esegue la ricerca dei chunk con
+	 * {@link com.valsecchi.ChunksManager.DictionaryData#getChunksWithArguments(String, String, String)}
+	 * con i parametri passati come filtro. Il buffer dei chunk temporanei viene
+	 * svuotato e vengono inseriti i chunk trovati utilizzando come chiave la
+	 * loro word. In questo modo la classe client conoscerà solo le words dei
+	 * chunk e tutti gli oggeti chunk saranno contenuti solo in
+	 * DictionaryManager e DizionaryData.
+	 * 
+	 * @param pattern
+	 *            parola del cercare nei chunk
+	 * @param type
+	 *            tipo dei chunk da cercare
+	 * @param unit
+	 *            unit dei chunk da cercare
+	 * @return restituisce un array di stringhe, i chunks trovati, le altre
+	 *         informazioni sono ricavabili con il metodo
+	 *         {@link #getChunkAttributes(String)}
+	 */
+	public String[] findChunk(String pattern, String type, String unit) {
+		// si cerca con data
+		List<Chunk> result = data.getChunksWithArguments(pattern, type, unit);
+		// si svuota il buffer
+		buffer.clear();
+		// si aggiungono al buffer le coppie word/Chunk in modo tale che si
+		// possa
+		// recuperare velocemente l'hash
+		for (Chunk c : result) {
+			buffer.put(c.getWord(), c);
+		}
+		// si restituiscono le parole
+		List<String> words = new ArrayList<>();
+		for (Chunk k : result) {
+			words.add(k.getWord());
+		}
+		// si restituisce il risultato
+		return (String[]) words.toArray();
+	}
+
+	/**
+	 * Il metodo restituisce al client gli attributi di un chunk, accettando
+	 * come parametro la word del chunk. Infatti grazie al buffer, viene
+	 * ricavato il chunk giusto e costruito l'array risultato così:
+	 * |hash|type|unit|.
+	 * 
+	 * @param word
+	 *            la parola che rappresenta il chunk
+	 * @return ritorna un array di stringhe che contengono gli attributi
+	 */
+	public String[] getChunkAttributes(String word) {
+		// si ricava il chunk
+		Chunk current = buffer.get(word);
+		String[] result = new String[3];
+		result[0] = current.getHash();
+		result[1] = current.getType();
+		result[2] = current.getUnit();
+		// si restituisce il risultato
+		return result;
+	}
 
 	/**
 	 * Metodo che crea un nuovo dizionario.
