@@ -138,7 +138,7 @@ public class DictionaryData {
 	 */
 	public boolean refreshData(DictionaryData data) {
 		// si recupera una lista di tutti i chunk del dictionary esterno
-		List<Chunk> externalChunks = data.getAllChunk();
+		List<Chunk> externalChunks = data.getAllChunks();
 		// array di boolean che memorizza i chunk trovati;
 		boolean[] chunksFounded = new boolean[externalChunks.size()];
 		// ora si inizia il confronto
@@ -146,7 +146,7 @@ public class DictionaryData {
 		for (Chunk extC : externalChunks) {
 			// variabile che indica se è stato trovato
 			boolean founded = false;
-			for (Chunk intC : this.getAllChunk()) {
+			for (Chunk intC : this.getAllChunks()) {
 				if (extC.getHash().equals(intC.getHash())) {
 					founded = true;
 					// si esce dal ciclo
@@ -515,7 +515,7 @@ public class DictionaryData {
 				// ora si controlla l'unità
 				if (unit.equals("")) {
 					// allora si restituiscono tutti i chunk
-					return this.getAllChunk();
+					return this.getAllChunks();
 				} else {
 					// allora si ricerca solo per unità passando tutti i chunks
 					return this.getChunksByUnit(this.chunksMap.values(), unit);
@@ -569,9 +569,13 @@ public class DictionaryData {
 	 * 
 	 * @return Restituisce tutti i chunks della lista
 	 */
-	public List<Chunk> getAllChunk() {
+	public List<Chunk> getAllChunks() {
 		// si restituisce tutta la lista di chunk
-		return (List<Chunk>) this.chunksMap.values();
+		List<Chunk> results = new ArrayList<>();
+		for(Chunk c :this.chunksMap.values()){
+			results.add(c);
+		}
+		return results;
 	}
 
 	/**
