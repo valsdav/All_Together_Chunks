@@ -491,7 +491,7 @@ public class DictionaryData {
 		for (Chunk c : listChunk) {
 			// il tipo non deve corrispondere perfettamente, cosi si può
 			// scrivere più di un tipo
-			if (c.getType().matches(type)) {
+			if (c.getType().contains(type)) {
 				results.add(c);
 			}
 		}
