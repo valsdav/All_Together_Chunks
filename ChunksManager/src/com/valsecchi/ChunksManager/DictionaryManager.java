@@ -226,7 +226,7 @@ public class DictionaryManager {
 	 * @return ritorna True se l'operazioni ha avuto successo
 	 */
 	public boolean modifyChunk(String word_original, String word_new,
-			String[] newDefinition) {
+			String[] newDefinitions) {
 		// si ricava il chunk
 		Chunk current = this.getChunk(word_original);
 		if (current == null) {
@@ -237,9 +237,23 @@ public class DictionaryManager {
 		if (word_original.equals(word_new)) {
 			// allora si modificano le definizioni.
 			List<Definition> todelete = this.compareDefinitionToDelete(
-					newDefinition, data.getDefinitions(current));
-			//si cancellano le definizioni da cancellare
-			data.removeDefinitions(current.getHash(),todelete);
+					newDefinitions, data.getDefinitions(current));
+			// si cancellano le definizioni da cancellare
+			data.removeDefinitions(current.getHash(), todelete);
+			// si aggiungono le definizioni da aggiungere
+			List<Definition> toAdd = new ArrayList<>();
+			for (String s : newDefinitions) {
+				toAdd.add(new Definition(current.getHash(), s));
+			}
+			data.addDefinitions(current.getHash(), toAdd);
+			return true;
+		}
+		else{
+			//bisogna prima eliminare il vecchio chunk
+			data.removeChunk(current);
+			//ora se ne crea uno nuovo
+			this.addChunk(word_new, current.getType(), current.getUnit(), newDefinitions);
+			return true;
 		}
 
 	}
