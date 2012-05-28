@@ -166,23 +166,18 @@ public class DictionaryManager {
 	public List<String> getDefinitions(String word) {
 		// lista di definizioni
 		List<Definition> def = new ArrayList<>();
-		// si controlla che sia nel buffer
-		if (this.buffer.containsKey(word)) {
-			// allora si ricavano le definizioni
-			def = data.getDefinitions(this.buffer.get(word));
+		// si ricava il chunk
+		Chunk c = this.getChunk(word);
+		// si controlla che esista
+		if (c == null) {
+			return null;
 		} else {
-			// si ricava il chunk
-			Chunk c = data.getChunkBySpecificWord(word);
-			// si controlla che esista
-			if (c == null) {
-				return null;
-			} else {
-				// si aggiunge al buffer
-				this.buffer.put(c.getWord(), c);
-				// si cercano le definizioni
-				def = data.getDefinitions(c);
-			}
+			// si aggiunge al buffer
+			this.buffer.put(c.getWord(), c);
+			// si cercano le definizioni
+			def = data.getDefinitions(c);
 		}
+
 		// si rielaborano le definizioni in stringhe
 		List<String> defs = new ArrayList<>();
 		for (Definition d : def) {
@@ -210,6 +205,45 @@ public class DictionaryManager {
 		result[2] = current.getUnit();
 		// si restituisce il risultato
 		return result;
+	}
+
+	/**
+	 * Metodo che dato un chunk permette di modificarne: -la parola: in questo
+	 * caso il vecchio chunk viene cancellato e ne viene creato uno nuovo,
+	 * meccanismo invisibile al codice client. -le definizioni: in questo caso
+	 * viene eseguito un confronto tra le vecchie definizioni e quelle nuove e
+	 * vengono effettuate le operazioni di aggiornamento necessarie.
+	 * 
+	 * Se la nuovo parola e quella originale sono uguali allora solo le
+	 * definizioni vengono modificate.
+	 * 
+	 * @param word_original
+	 *            parola del chunk originale
+	 * @param word_new
+	 *            nuova parola del chunk
+	 * @param newDefinition
+	 *            array di stringhe che contengono le definizioni da impostare
+	 */
+	public void modifyChunk(String word_original, String word_new,
+			String[] newDefinition) {
+		// si ricava il chunk
+	}
+
+	/**
+	 * Metodo privato che ricava un chunk dalla corrispettiva parola, prima
+	 * cercandolo nel buffer e in caso non sia presente, caricandolo da
+	 * {@link #data}.
+	 * 
+	 * @param word
+	 *            parola del chunk da restituire
+	 * @return ritorna null se il chunk non è presente
+	 */
+	private Chunk getChunk(String word) {
+		if (this.buffer.containsKey(word)) {
+			return this.buffer.get(word);
+		} else {
+			return data.getChunkBySpecificWord(word);
+		}
 	}
 
 	/**
