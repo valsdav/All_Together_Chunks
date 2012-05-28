@@ -310,6 +310,30 @@ public class DictionaryData {
 			return false;
 		}
 	}
+	
+	/**
+	 * Metodo che rimuove un chunk dalla lista. N.B.: questo metodo provoca la
+	 * rimozione anche di tutte le definizioni associate. Inoltre l'hash del
+	 * chunk viene memorizzato, in modo tale che al refresh del dictionary si
+	 * verificherà la cancellazione del chunk se ancora presente e verranno
+	 * anche cancellate tutte le relative definizioni.
+	 * 
+	 * @param chunk chunk da rimuovere
+	 * @return ritorna True se le operazioni vanno a buon fine
+	 */
+	public boolean removeChunk(Chunk chunk){
+		//si controlla se esiste
+		if(this.chunkExist(chunk)){
+			this.chunksMap.remove(chunk);
+			// si aggiunge l'hash alla lista dei chunk eliminati
+			this.chunksToDelete.add(chunk.getHash());
+			// ora si rimuovono le definizioni
+			this.removeAllDefinitions(chunk.getHash());
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * Metodo che aggiunge le difinitioni di un chunk identificato dal suo
