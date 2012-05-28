@@ -96,7 +96,7 @@ public class DictionaryData {
 			type = chu.getChildText("type");
 			unit = chu.getChildText("unit");
 
-			Chunk newChunk = new Chunk(word,hash, type, unit);
+			Chunk newChunk = new Chunk(word, hash, type, unit);
 			// si aggiunge alla mappa
 			this.chunksMap.put(hash, newChunk);
 		}
@@ -136,9 +136,11 @@ public class DictionaryData {
 	 *            viene richiesto come argomento un oggetto DictionaryData da
 	 *            confrontare con quello corrente
 	 */
-	public boolean refreshData(DictionaryData data) {
+	public void refreshData(DictionaryData data) {
 		// si recupera una lista di tutti i chunk del dictionary esterno
 		List<Chunk> externalChunks = data.getAllChunks();
+		//lista dei chunks interni
+		List<Chunk> internalChunks = this.getAllChunks();
 		// array di boolean che memorizza i chunk trovati;
 		boolean[] chunksFounded = new boolean[externalChunks.size()];
 		// ora si inizia il confronto
@@ -146,7 +148,7 @@ public class DictionaryData {
 		for (Chunk extC : externalChunks) {
 			// variabile che indica se è stato trovato
 			boolean founded = false;
-			for (Chunk intC : this.getAllChunks()) {
+			for (Chunk intC : internalChunks) {
 				if (extC.getHash().equals(intC.getHash())) {
 					founded = true;
 					// si esce dal ciclo
@@ -198,7 +200,6 @@ public class DictionaryData {
 			}
 		}
 		// completata la sincronizzazione
-		return true;
 	}
 
 	/**
@@ -208,12 +209,11 @@ public class DictionaryData {
 	 * 
 	 * @param path
 	 *            percorso in cui salvare il dizionario
-	 * @return ritorna True se il dizionario è stato scritto correttamente
 	 * @throws IOException
 	 *             viene lanciata l'eccezione se ci sono problemi con la
 	 *             scrittura del file
 	 */
-	public boolean writeData(Path path) throws IOException {
+	public void writeData(Path path) throws IOException {
 		// nuovo document
 		Element root = new Element("ChunksDictionary");
 		Document newD = new Document(root);
@@ -263,8 +263,6 @@ public class DictionaryData {
 			// si rilancia l'eccezione
 			throw e;
 		}
-		// se tutto è andato bene si ritorna true
-		return true;
 	}
 
 	/**
@@ -310,7 +308,7 @@ public class DictionaryData {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Metodo che rimuove un chunk dalla lista. N.B.: questo metodo provoca la
 	 * rimozione anche di tutte le definizioni associate. Inoltre l'hash del
@@ -318,12 +316,13 @@ public class DictionaryData {
 	 * verificherà la cancellazione del chunk se ancora presente e verranno
 	 * anche cancellate tutte le relative definizioni.
 	 * 
-	 * @param chunk chunk da rimuovere
+	 * @param chunk
+	 *            chunk da rimuovere
 	 * @return ritorna True se le operazioni vanno a buon fine
 	 */
-	public boolean removeChunk(Chunk chunk){
-		//si controlla se esiste
-		if(this.chunkExist(chunk)){
+	public boolean removeChunk(Chunk chunk) {
+		// si controlla se esiste
+		if (this.chunkExist(chunk)) {
 			this.chunksMap.remove(chunk);
 			// si aggiunge l'hash alla lista dei chunk eliminati
 			this.chunksToDelete.add(chunk.getHash());
@@ -390,7 +389,8 @@ public class DictionaryData {
 	 * @return Viene restituito un array di boolean che rappresenta quali
 	 *         definizioni sono state eliminate e quali no
 	 */
-	public boolean[] removeDefinitions(String hash, List<Definition> defs_to_delete) {
+	public boolean[] removeDefinitions(String hash,
+			List<Definition> defs_to_delete) {
 		// si ricava se le definizioni esistono
 		boolean[] exists = this.definitionsExist(hash, defs_to_delete);
 		// lista per inserire le definizioni eliminare
@@ -432,15 +432,18 @@ public class DictionaryData {
 	}
 
 	/**
-	 * Il metodo effettua una ricerca fra i chunks come {@link #getChunksByWord(String)}, ma restituisce solo il chunk 
-	 * la cui parola è esattamente uguale al parametro.
-	 * @param word parola del chunk da cercare
+	 * Il metodo effettua una ricerca fra i chunks come
+	 * {@link #getChunksByWord(String)}, ma restituisce solo il chunk la cui
+	 * parola è esattamente uguale al parametro.
+	 * 
+	 * @param word
+	 *            parola del chunk da cercare
 	 * @return ritorna il chunk se trovato, se no null
 	 */
-	public Chunk getChunkBySpecificWord(String word){
+	public Chunk getChunkBySpecificWord(String word) {
 		Chunk result = null;
 		for (Chunk ck : this.chunksMap.values()) {
-			//da notare l'uso di equals e non contains
+			// da notare l'uso di equals e non contains
 			if (ck.getWord().equals(word)) {
 				result = ck;
 				break;
@@ -448,14 +451,14 @@ public class DictionaryData {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Metodo public che effettua una ricerca tra i vari chunk e restituisce
 	 * quelli che contengono il pattern specificato. La ricerca viene effettuata
 	 * solo sulla parola che caratterizza il chunk. Il metodo viene lasciato
 	 * public perchè è di comodo utilizzo e accessibile dall'esterno senza
-	 * riferimenti ai dati interni.
-	 * La ricerca non controlla l'identità dell'eguaglianza ma solo se pattern è contenuto
+	 * riferimenti ai dati interni. La ricerca non controlla l'identità
+	 * dell'eguaglianza ma solo se pattern è contenuto
 	 * 
 	 * @param pattern
 	 *            filtro da confrontare con i chunks per la ricerca. Il filtro
@@ -571,9 +574,9 @@ public class DictionaryData {
 			// nome
 			List<Chunk> temp = this.getChunksByWord(pattern);
 			// poi si controlla come sopra
-			if (type .equals("")) {
+			if (type.equals("")) {
 				// ora si controlla l'unità
-				if (unit .equals("")) {
+				if (unit.equals("")) {
 					// allora si restituiscono i chunks in temp
 					return temp;
 				} else {
@@ -585,7 +588,7 @@ public class DictionaryData {
 				// si ricerca per tipo
 				List<Chunk> temp2 = this.getChunksByType(temp, type);
 				// si controlla l'unit
-				if (unit .equals("")) {
+				if (unit.equals("")) {
 					// si ritorna temp2
 					return temp2;
 				} else {
@@ -604,7 +607,7 @@ public class DictionaryData {
 	public List<Chunk> getAllChunks() {
 		// si restituisce tutta la lista di chunk
 		List<Chunk> results = new ArrayList<>();
-		for(Chunk c :this.chunksMap.values()){
+		for (Chunk c : this.chunksMap.values()) {
 			results.add(c);
 		}
 		return results;
@@ -635,7 +638,8 @@ public class DictionaryData {
 	/**
 	 * Metodo che restituisce un array di Definition che hanno un certo codice
 	 * hash. Differente da {@link #getDefinition(String)} poichè questo metodo
-	 * accetta un argomento di tipo Chunk. Almeno una definizione è sempre presente.
+	 * accetta un argomento di tipo Chunk. Almeno una definizione è sempre
+	 * presente.
 	 * 
 	 * @param chunk
 	 *            Chunk per la ricerca.
@@ -732,11 +736,12 @@ public class DictionaryData {
 	 *         siano da eliminare. Restituisce True se la definione è da
 	 *         eliminare.
 	 */
-	public boolean[] getDefinitionsMustBeRemoved(String hash, Definition[] defs) {
+	public boolean[] getDefinitionsMustBeRemoved(String hash, List<Definition> defs) {
 		// si ricavano le definizioni da eliminare memorizzate per lo specifico
 		// hash.
 		List<Definition> toDelete = this.defsToDelete.get(hash);
 		boolean[] to_del = new boolean[toDelete.size()];
+		//TODO da sistemare
 		int index = 0;
 		for (Definition d1 : toDelete) {
 			boolean founded = false;
@@ -750,16 +755,6 @@ public class DictionaryData {
 		}
 		// si restituisce il risultato
 		return to_del;
-	}
-
-	/**
-	 * Overloading del metodo
-	 * {@link #getDefinitionsMustBeRemoved(String, Definition[])}
-	 */
-	public boolean[] getDefinitionsMustBeRemoved(String hash,
-			List<Definition> defs) {
-		return this.getDefinitionsMustBeRemoved(hash,
-				(Definition[]) defs.toArray());
 	}
 
 	/**
