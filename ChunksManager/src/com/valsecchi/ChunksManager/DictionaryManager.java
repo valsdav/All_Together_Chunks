@@ -90,7 +90,7 @@ public class DictionaryManager {
 	 *         aggiornate
 	 */
 	public boolean addChunk(String word, String type, String unit,
-			String[] definitions) {
+			List<String> definitions) {
 		// si crea un oggetto chunk da aggiungere
 		Chunk newC = new Chunk(word, type, unit);
 		// si aggiunge il chunk,
@@ -226,7 +226,7 @@ public class DictionaryManager {
 	 * @return ritorna True se l'operazioni ha avuto successo
 	 */
 	public boolean modifyChunk(String word_original, String word_new,
-			String[] newDefinitions) {
+			List<String> newDefinitions) {
 		// si ricava il chunk
 		Chunk current = this.getChunk(word_original);
 		if (current == null) {
