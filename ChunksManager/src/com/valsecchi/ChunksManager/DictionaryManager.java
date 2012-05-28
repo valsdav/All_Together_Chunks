@@ -286,7 +286,7 @@ public class DictionaryManager {
 	 *            lista di definizioni vecchie da confrontare
 	 * @return ritorna la lista di definizioni da eliminare
 	 */
-	private List<Definition> compareDefinitionToDelete(String[] current,
+	private List<Definition> compareDefinitionToDelete(List<String> current,
 			List<Definition> old) {
 		List<Definition> todelete = new ArrayList<>();
 		for (Definition d : old) {
