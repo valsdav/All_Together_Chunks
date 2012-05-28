@@ -70,7 +70,11 @@ public class DictionaryManager {
 	}
 
 	/**
-	 * Metodo che aggiunge un Chunk alla banca dati del dizionario.
+	 * Metodo che aggiunge un Chunk e relative definizioni ai dati dizionario di
+	 * {@link #data}. Se il chunk è stato aggiunto si aggiungono le definizioni,
+	 * se era già presente si aggiornano. Il metodo non elimina le definizioni
+	 * che non sono presenti nel parametro se il chunk esiste già, ma aggiunge
+	 * solo quelle non presenti.
 	 * 
 	 * @param word
 	 *            parola del chunk da aggiungere
@@ -78,13 +82,29 @@ public class DictionaryManager {
 	 *            tipo del chunk da aggiungere
 	 * @param unit
 	 *            unità del chunk da aggiungere
-	 * @return ritorna True se il chunk è stato aggiunto correttamente
+	 * @param definitions
+	 *            array si stringhe che rappresenta le definizioni. Deve sempre
+	 *            contenere almeno una defizione.
+	 * @return ritorna True se il chunk è stato aggiunto, False se il chunk era
+	 *         già presente. NB:le definizioni vengono comunque sempre
+	 *         aggiornate
 	 */
-	public boolean addChunk(String word, String type, String unit) {
+	public boolean addChunk(String word, String type, String unit,
+			String[] definitions) {
 		// si crea un oggetto chunk da aggiungere
 		Chunk newC = new Chunk(word, type, unit);
-		// si aggiunge
-		return data.addChunk(newC);
+		// si aggiunge il chunk,
+		// isPresent memorizza se il chunk esisteva già in memoria
+		boolean isPresent = data.addChunk(newC);
+		// allora si aggiornano le definizioni
+		List<Definition> defs = new ArrayList<>();
+		for (String s : definitions) {
+			defs.add(new Definition(newC.getHash(), s));
+		}
+		// si aggiornano le definizioni
+		data.addDefinitions(newC.getHash(), defs);
+		// si ritorna isPresent
+		return isPresent;
 	}
 
 	/**
@@ -109,8 +129,8 @@ public class DictionaryManager {
 	public List<String> findChunk(String pattern, String type, String unit) {
 		// si cerca con data
 		List<Chunk> result = data.getChunksWithArguments(pattern, type, unit);
-		//si controlla che non sia vuoto
-		if(result== null || result.size()==0){
+		// si controlla che non sia vuoto
+		if (result == null || result.size() == 0) {
 			return null;
 		}
 		// si svuota il buffer
@@ -129,44 +149,43 @@ public class DictionaryManager {
 		// si restituisce il risultato
 		return words;
 	}
-	
+
 	/**
-	 * Metodo che ricerca nei dati con {@link #data} le definizioni di una certa parola.
-	 * Il metodo prima controlla se la parola è memorizzata già in buffer (questa è la situazione più favorevole
-	 * perchè il chunk è già disponibile; se non è in buffer, il metodo ricava il chunk da {@link #data} con in metodo 
-	 * {@link com.valsecchi.ChunksManager.DictionaryData#getChunksByWord(String)}.
-	 * @param word parola di cui cercare le definizioni
+	 * Metodo che ricerca nei dati con {@link #data} le definizioni di una certa
+	 * parola. Il metodo prima controlla se la parola è memorizzata già in
+	 * buffer (questa è la situazione più favorevole perchè il chunk è già
+	 * disponibile; se non è in buffer, il metodo ricava il chunk da
+	 * {@link #data} con in metodo
+	 * {@link com.valsecchi.ChunksManager.DictionaryData#getChunksByWord(String)}
+	 * .
+	 * 
+	 * @param word
+	 *            parola di cui cercare le definizioni
 	 * @return ritorna la lista di definizioni, null se il chunk non esiste
 	 */
-	public List<String> getDefinitions(String word){
-		//lista di definizioni
+	public List<String> getDefinitions(String word) {
+		// lista di definizioni
 		List<Definition> def = new ArrayList<>();
-		//si controlla che sia nel buffer
-		if(this.buffer.containsKey(word)){
-			//allora si ricavano le definizioni
-			def = data.getDefinitions(this.buffer.get(word));
-		}else
-		{
-			//si ricava il chunk
-			Chunk c = data.getChunkBySpecificWord(word);
-			//si controlla che esista
-			if(c==null){
-				return null;
-			}else{
-				//si aggiunge al buffer
-				this.buffer.put(c.getWord(),c);
-				//si cercano le definizioni
-				def= data.getDefinitions(c);
-			}
+		// si ricava il chunk
+		Chunk c = this.getChunk(word);
+		// si controlla che esista
+		if (c == null) {
+			return null;
+		} else {
+			// si aggiunge al buffer
+			this.buffer.put(c.getWord(), c);
+			// si cercano le definizioni
+			def = data.getDefinitions(c);
 		}
-		//si rielaborano le definizioni in stringhe
+
+		// si rielaborano le definizioni in stringhe
 		List<String> defs = new ArrayList<>();
-		for(Definition d : def){
+		for (Definition d : def) {
 			defs.add(d.getText());
 		}
 		return defs;
 	}
-	
+
 	/**
 	 * Il metodo restituisce al client gli attributi di un chunk, accettando
 	 * come parametro la word del chunk. Infatti grazie al buffer, viene
@@ -186,6 +205,89 @@ public class DictionaryManager {
 		result[2] = current.getUnit();
 		// si restituisce il risultato
 		return result;
+	}
+
+	/**
+	 * Metodo che dato un chunk permette di modificarne: -la parola: in questo
+	 * caso il vecchio chunk viene cancellato e ne viene creato uno nuovo,
+	 * meccanismo invisibile al codice client. -le definizioni: in questo caso
+	 * viene eseguito un confronto tra le vecchie definizioni e quelle nuove e
+	 * vengono effettuate le operazioni di aggiornamento necessarie.
+	 * 
+	 * Se la nuovo parola e quella originale sono uguali allora solo le
+	 * definizioni vengono modificate.
+	 * 
+	 * @param word_original
+	 *            parola del chunk originale
+	 * @param word_new
+	 *            nuova parola del chunk
+	 * @param newDefinition
+	 *            array di stringhe che contengono le definizioni da impostare
+	 * @return ritorna True se l'operazioni ha avuto successo
+	 */
+	public boolean modifyChunk(String word_original, String word_new,
+			String[] newDefinition) {
+		// si ricava il chunk
+		Chunk current = this.getChunk(word_original);
+		if (current == null) {
+			return false;
+		}
+		// si controlla se si vuole modificare solo le definizioni o anche il
+		// chunk
+		if (word_original.equals(word_new)) {
+			// allora si modificano le definizioni.
+			List<Definition> todelete = this.compareDefinitionToDelete(
+					newDefinition, data.getDefinitions(current));
+			//si cancellano le definizioni da cancellare
+			data.removeDefinitions(current.getHash(),todelete);
+		}
+
+	}
+
+	/**
+	 * Metodo privato che ricava un chunk dalla corrispettiva parola, prima
+	 * cercandolo nel buffer e in caso non sia presente, caricandolo dalla
+	 * memoria ({@link #data}). Questo metodo è la scorciatoia per ricavare un
+	 * chunk nel dizionario in DictionaryManager.
+	 * 
+	 * @param word
+	 *            parola del chunk da restituire
+	 * @return ritorna null se il chunk non è presente
+	 */
+	private Chunk getChunk(String word) {
+		if (this.buffer.containsKey(word)) {
+			return this.buffer.get(word);
+		} else {
+			return data.getChunkBySpecificWord(word);
+		}
+	}
+
+	/**
+	 * Metodo che compara due liste di definizioni per determinare quelle da
+	 * eliminare in old
+	 * 
+	 * @param current
+	 *            lista di definizioni nuove, (come stringhe)
+	 * @param old
+	 *            lista di definizioni vecchie da confrontare
+	 * @return ritorna la lista di definizioni da eliminare
+	 */
+	private List<Definition> compareDefinitionToDelete(String[] current,
+			List<Definition> old) {
+		List<Definition> todelete = new ArrayList<>();
+		for (Definition d : old) {
+			boolean isThere = false;
+			for (String d2 : current) {
+				if (d2.equals(d.getText())) {
+					isThere = true;
+					break;
+				}
+			}
+			if (isThere == false) {
+				todelete.add(d);
+			}
+		}
+		return todelete;
 	}
 
 	/**

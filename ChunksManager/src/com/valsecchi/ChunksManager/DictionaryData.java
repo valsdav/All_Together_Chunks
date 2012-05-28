@@ -318,34 +318,23 @@ public class DictionaryData {
 	 * @param hash
 	 *            codice hash delle definizioni
 	 * @param defs
-	 *            array di definizioni da aggiungere.
+	 *            lista di definizioni da aggiungere.
 	 * @return ritorna un array di boolean che indica quali definizioni sono
 	 *         state aggiunte. Se è False, vuol dire che la definizione non
 	 *         esisteva ed è stata aggiunta, se True significa che la
 	 *         definizione esisteva già;
 	 * 
 	 */
-	public boolean[] addDefinitions(String hash, Definition[] defs) {
+	public boolean[] addDefinitions(String hash, List<Definition> defs) {
 		// prima si ricava un array di boolean per controllare se esistono o no
 		boolean[] exists = this.definitionsExist(hash, defs);
-		for (int i = 0; i < defs.length; i++) {
+		for (int i = 0; i < defs.size(); i++) {
 			if (exists[i] == false) {
 				// si aggiunge la definizione
-				this.defsList.add(defs[i]);
+				this.defsList.add(defs.get(i));
 			}
 		}
 		return exists;
-	}
-
-	/**
-	 * Overloading del metodo {@link #addDefinitions(String, Definition[])} che
-	 * permette di usare come parametro una lista di definizioni invece che un
-	 * array
-	 * 
-	 * @see #addDefinitions(String, Definition[])
-	 */
-	public boolean[] addDefinitions(String hash, List<Definition> defs) {
-		return this.addDefinitions(hash, (Definition[]) defs.toArray());
 	}
 
 	/**
@@ -372,22 +361,22 @@ public class DictionaryData {
 	 * 
 	 * @param hash
 	 *            codice hash delle definizioni
-	 * @param defs
-	 *            array di definizioni da eliminare
+	 * @param defs_to_delete
+	 *            lista di definizioni da eliminare
 	 * @return Viene restituito un array di boolean che rappresenta quali
 	 *         definizioni sono state eliminate e quali no
 	 */
-	public boolean[] removeDefinitions(String hash, Definition[] defs) {
+	public boolean[] removeDefinitions(String hash, List<Definition> defs_to_delete) {
 		// si ricava se le definizioni esistono
-		boolean[] exists = this.definitionsExist(hash, defs);
+		boolean[] exists = this.definitionsExist(hash, defs_to_delete);
 		// lista per inserire le definizioni eliminare
 		List<Definition> toDelete = new ArrayList<>();
-		for (int i = 0; i < defs.length; i++) {
+		for (int i = 0; i < defs_to_delete.size(); i++) {
 			if (exists[i] == true) {
 				// allora si elimina dalla lista
-				this.defsList.remove(defs[i]);
+				this.defsList.remove(defs_to_delete.get(i));
 				// si aggiunge alla lista da eliminare
-				toDelete.add(defs[i]);
+				toDelete.add(defs_to_delete.get(i));
 			}
 		}
 		// ora si controlla se c'è già un elemento con la stessa hash in
@@ -657,17 +646,17 @@ public class DictionaryData {
 	 * quello con l'hash passata come argomento
 	 * 
 	 * @param defs
-	 *            array di definizioni da controllare
+	 *            lista di definizioni da controllare
 	 * @param hash
 	 *            hash delle definizioni da cercare
 	 * @return restituisce un array di boolean che indica o meno l'esistenza di
 	 *         ognuna delle definizioni nella lista.
 	 */
-	public boolean[] definitionsExist(String hash, Definition[] defs) {
+	public boolean[] definitionsExist(String hash, List<Definition> defs) {
 		// si controlla se la lista di definizioni esiste
 		// devono essere tutte dello stesso chunk
 		List<Definition> founded = this.getDefinitions(hash);
-		boolean[] listB = new boolean[defs.length];
+		boolean[] listB = new boolean[defs.size()];
 		int index = 0;
 		for (Definition d1 : defs) {
 			boolean is_present = false;
