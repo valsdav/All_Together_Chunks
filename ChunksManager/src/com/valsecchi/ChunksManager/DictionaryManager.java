@@ -223,16 +223,32 @@ public class DictionaryManager {
 	 *            nuova parola del chunk
 	 * @param newDefinition
 	 *            array di stringhe che contengono le definizioni da impostare
+	 * @return ritorna True se l'operazioni ha avuto successo
 	 */
-	public void modifyChunk(String word_original, String word_new,
+	public boolean modifyChunk(String word_original, String word_new,
 			String[] newDefinition) {
 		// si ricava il chunk
+		Chunk current = this.getChunk(word_original);
+		if (current == null) {
+			return false;
+		}
+		// si controlla se si vuole modificare solo le definizioni o anche il
+		// chunk
+		if (word_original.equals(word_new)) {
+			// allora si modificano le definizioni.
+			List<Definition> todelete = this.compareDefinitionToDelete(
+					newDefinition, data.getDefinitions(current));
+			//si cancellano le definizioni da cancellare
+			data.removeDefinitions(current.getHash(),todelete);
+		}
+
 	}
 
 	/**
 	 * Metodo privato che ricava un chunk dalla corrispettiva parola, prima
-	 * cercandolo nel buffer e in caso non sia presente, caricandolo da
-	 * {@link #data}.
+	 * cercandolo nel buffer e in caso non sia presente, caricandolo dalla
+	 * memoria ({@link #data}). Questo metodo è la scorciatoia per ricavare un
+	 * chunk nel dizionario in DictionaryManager.
 	 * 
 	 * @param word
 	 *            parola del chunk da restituire
@@ -244,6 +260,34 @@ public class DictionaryManager {
 		} else {
 			return data.getChunkBySpecificWord(word);
 		}
+	}
+
+	/**
+	 * Metodo che compara due liste di definizioni per determinare quelle da
+	 * eliminare in old
+	 * 
+	 * @param current
+	 *            lista di definizioni nuove, (come stringhe)
+	 * @param old
+	 *            lista di definizioni vecchie da confrontare
+	 * @return ritorna la lista di definizioni da eliminare
+	 */
+	private List<Definition> compareDefinitionToDelete(String[] current,
+			List<Definition> old) {
+		List<Definition> todelete = new ArrayList<>();
+		for (Definition d : old) {
+			boolean isThere = false;
+			for (String d2 : current) {
+				if (d2.equals(d.getText())) {
+					isThere = true;
+					break;
+				}
+			}
+			if (isThere == false) {
+				todelete.add(d);
+			}
+		}
+		return todelete;
 	}
 
 	/**
