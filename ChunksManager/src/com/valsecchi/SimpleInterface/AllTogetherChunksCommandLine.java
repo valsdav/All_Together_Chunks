@@ -108,6 +108,11 @@ public class AllTogetherChunksCommandLine {
 		while (canContinue) {
 			out.print(">>>");
 			command = reader.readLine();
+			//se non sono stati inseriti comandi
+			if (command.equals("")) {
+				out.println("Please write a command or help to start...");
+				continue;
+			}
 			// si divide il comando nelle sue parti
 			StringTokenizer tok = new StringTokenizer(command);
 			// si ricava il primo comando
