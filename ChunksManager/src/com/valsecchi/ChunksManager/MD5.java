@@ -27,7 +27,7 @@ public class MD5 {
 			str.append(Integer.toHexString((bytes[i] & 0xFF) | 0x100)
 					.substring(1, 3));
 
-		return str.toString().substring(0, 6)
-				+ str.toString().substring(str.length() - 7, str.length());
+		return (str.toString().substring(0, 6)
+				+ str.toString().substring(str.length() - 7, str.length()-1)).toUpperCase();
 	}
 }
