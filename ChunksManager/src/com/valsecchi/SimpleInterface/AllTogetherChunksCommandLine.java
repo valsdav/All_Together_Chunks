@@ -63,16 +63,16 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			FIND,DEFIN, EXIT };
+			FIND, DEFIN, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_INSTR = {
-			"help +command: displays instructions for command",
+			"help +command: displays instructions for command\n-->  help >>> help: displays all commands available with instructions",
 			"open +path:loads the Chunks Dictionary in path",
 			"find +word +type +unit: searches a chunk that contains that word, that it's of that type and unit",
-			"definition +word: diplays the definitions of the given word",
+			"definition +chunk: diplays the definitions of the given chunk",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
@@ -105,21 +105,31 @@ public class AllTogetherChunksCommandLine {
 			command = reader.readLine();
 			// si divide il comando nelle sue parti
 			StringTokenizer tok = new StringTokenizer(command);
-			List<String> cmds = new ArrayList<>();
+			// si ricava il primo comando
+			String mainCommand = tok.nextToken();
+			// si ricava il resto del comando
+			StringBuilder build = new StringBuilder();
+			int k = tok.countTokens();
 			while (tok.hasMoreTokens()) {
-				cmds.add(tok.nextToken());
+				if (k > 1) {
+					build.append(tok.nextToken() + " ");
+				} else {
+					build.append(tok.nextToken());
+				}
+				k--;
 			}
+			// argomenti del comando
+			String arg = build.toString();
 			// ora abbiamo i comandi incapsulati
 			// si controlla il comando primo comando scelto
-			switch (cmds.get(0)) {
+			switch (mainCommand) {
 			case HELP: {
 				// si controlla quale comando segue help
-				if (cmds.size() > 1) {
+				if (!arg.equals("")) {
 					// si ricava il comando di cui si vuole l'help
-					String cmd2 = cmds.get(1);
-					if (COMMANDS_MAP.containsKey(cmd2)) {
-						out.println("-->  " + cmd2 + " >>> "
-								+ COMMANDS_MAP.get(cmd2));
+					if (COMMANDS_MAP.containsKey(arg)) {
+						out.println("-->  " + arg + " >>> "
+								+ COMMANDS_MAP.get(arg));
 					} else {
 						// se non c'è il comando si scrive
 						out.println("Command not founded!");
@@ -134,16 +144,21 @@ public class AllTogetherChunksCommandLine {
 								+ COMMANDS_MAP.values().toArray()[i]);
 					}
 				}
+				break;
 
 			}
 			case OPEN_DICTIONARY: {
 				// si ricava la seconda parte del comando se no si inserisce
 				// errore
-				if (cmds.size() > 1) {
-					// si ricava il comando di cui si vuole l'help
-					String cmd2 = cmds.get(1);
+				if (!arg.equals("")) {
 					// si ricava la path
-					Path file = Paths.get(cmd2);
+					Path file;
+					try {
+						file = Paths.get(arg);
+					} catch (Exception e) {
+						out.println("Invalid path!");
+						continue;
+					}
 					// si controlla che esiste
 					if (Files.exists(file)) {
 						// esiste si carica il dizionario
@@ -167,21 +182,31 @@ public class AllTogetherChunksCommandLine {
 			case FIND: {
 				// si contralla che sia caricato un dizionario
 				if (dictLoaded == false) {
-					out.println("You cannot use this command unless you open a " +
-							"dictionary. Please open a dictionary with 'open +path");
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary. Please open a dictionary with 'open +path");
 					continue;
 				}
-				// si richiede la parola
-				out.print("--> pattern:  ");
-				String pattern = reader.readLine();
-				out.print("--> type:  ");
-				String type = reader.readLine();
-				out.print("--> unit:  ");
-				String unit = reader.readLine();
+				// si controlla se ci sono argomenti.
+				// se c'è argomenti è il pattern
+				String pattern, type, unit;
+				if (arg.equals("")) {
+					// si richiede la parola
+					out.print("--> pattern:  ");
+					pattern = reader.readLine();
+					out.print("--> type:  ");
+					type = reader.readLine();
+					out.print("--> unit:  ");
+					unit = reader.readLine();
+				} else {
+					pattern = arg;
+					type = "";
+					unit = "";
+				}
 				// si ricavano i chunk trovati
-				List<String> results = dictionary.findChunk(pattern, type, unit);
+				List<String> results = dictionary
+						.findChunk(pattern, type, unit);
 				// si mostrano
-				if (results == null || results.size()== 0) {
+				if (results == null || results.size() == 0) {
 					out.println("No Chunk Matches...");
 					continue;
 				}
@@ -189,31 +214,30 @@ public class AllTogetherChunksCommandLine {
 					out.println("    -- " + r);
 				}
 				out.println("N° of Chunks:  " + results.size());
-				break;				
+				break;
 			}
-			case DEFIN:
-			{
-				String wordToSearch = "";
-				if (cmds.size() > 1) {
-					// si ricava la parola di cui si vuole la definizione
-					wordToSearch = cmds.get(1);}
-				else{
-					out.println("Missing word! Write 'definition +word'");
-					continue;
-				}
-				// si contralla che sia caricato un dizionario
+			case DEFIN: {
+				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
-					out.println("You cannot use this command unless you open a " +
-							"dictionary. Please open a dictionary with 'open +path");
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path");
 					continue;
 				}
-				//si ricavano le definizioni
+				String wordToSearch = "";
+				if (!arg.equals("")) {
+					// si ricava la parola di cui si vuole la definizione
+					wordToSearch = arg;
+				} else {
+					out.println("Missing word! Write 'definition +chunk'");
+					continue;
+				}
+				// si ricavano le definizioni
 				List<String> defs = dictionary.getDefinitions(wordToSearch);
-				if(defs!=null){
-					for(String s :defs){
+				if (defs != null) {
+					for (String s : defs) {
 						out.println("    -- " + s);
 					}
-				}else{
+				} else {
 					out.println("Chunk not founded!");
 				}
 				break;
