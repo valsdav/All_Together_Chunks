@@ -293,6 +293,18 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
+			case EXIT:
+			{
+				//prima di uscire si salva il dizionario
+//				if(dictionary.)
+				out.println("Dictionary saving in progress...");
+				dictionary.closeDictionary();
+				out.println("Dictionary saved successfully!");
+				out.println("Goodbye");
+				//si esce
+				System.exit(0);
+				break;
+			}
 			default:
 				out.println("Command not founded!");
 				break;
