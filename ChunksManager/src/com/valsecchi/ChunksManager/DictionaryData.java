@@ -450,32 +450,40 @@ public class DictionaryData {
 	 *            lista di definizioni da eliminare
 	 * @return Viene restituito un array di boolean che rappresenta quali
 	 *         definizioni sono state eliminate e quali no. Se è True vuol dire
-	 *         che (essendo presente) è stata eliminata.
+	 *         che (essendo presente) è stata eliminata. Se si ritorna null
+	 *         significa che l'hash non era presente, quindi le definizioni non
+	 *         ci sono e non sono nemmeno da rimuovere.
 	 */
 	public boolean[] removeDefinitions(String hash,
 			List<Definition> defs_to_delete) {
 		// si ricava se le definizioni esistono
 		boolean[] exists = this.definitionsExist(hash, defs_to_delete);
-		// lista per inserire le definizioni eliminare
-		List<Definition> toDelete = new ArrayList<>();
-		for (int i = 0; i < defs_to_delete.size(); i++) {
-			if (exists[i] == true) {
-				// allora si elimina dalla lista
-				this.defsMap.get(hash).remove(defs_to_delete.get(i));
-				// si aggiunge alla lista da eliminare
-				toDelete.add(defs_to_delete.get(i));
+		// si controlla che sia stato trovato l'hash corrispondente
+		if (exists != null) {
+			// lista per inserire le definizioni eliminare
+			List<Definition> toDelete = new ArrayList<>();
+			for (int i = 0; i < defs_to_delete.size(); i++) {
+				if (exists[i] == true) {
+					// allora si elimina dalla lista
+					this.defsMap.get(hash).remove(defs_to_delete.get(i));
+					// si aggiunge alla lista da eliminare
+					toDelete.add(defs_to_delete.get(i));
+				}
 			}
-		}
-		// ora si controlla se c'è già un elemento con la stessa hash in
-		// this.defsToDelete
-		if (this.defsToDelete.containsKey(hash)) {
-			// se è già contenuto si aggiungono
-			this.defsToDelete.get(hash).addAll(toDelete);
+			// ora si controlla se c'è già un elemento con la stessa hash in
+			// this.defsToDelete
+			if (this.defsToDelete.containsKey(hash)) {
+				// se è già contenuto si aggiungono
+				this.defsToDelete.get(hash).addAll(toDelete);
+			} else {
+				// se non c'è si crea e si agginge la lista
+				this.defsToDelete.put(hash, toDelete);
+			}
+			return exists;
 		} else {
-			// se non c'è si crea e si agginge la lista
-			this.defsToDelete.put(hash, toDelete);
+			// se non c'è l'hash si ritorna null
+			return null;
 		}
-		return exists;
 	}
 
 	/**
