@@ -189,8 +189,9 @@ public class AllTogetherChunksCommandLine {
 								DictionaryManager.ONLINE_MODE, file
 										.getFileName().toString(), file);
 						// ora si carica
+						out.println("Dictionary loading in progress..");
 						dictionary.loadDictionary();
-						out.println("Dictionary Loaded!");
+						out.println("Dictionary loaded successfully!");
 						// si imposta che il dizionario è stato caricato
 						dictLoaded = true;
 					} else {
@@ -205,7 +206,7 @@ public class AllTogetherChunksCommandLine {
 				// si contralla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
-							+ "dictionary. Please open a dictionary with 'open +path");
+							+ "dictionary. Please open a dictionary with 'open +path'...");
 					continue;
 				}
 				// si controlla se ci sono argomenti.
@@ -245,7 +246,7 @@ public class AllTogetherChunksCommandLine {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
-							+ "dictionary.\nPlease open a dictionary with 'open +path");
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
 				// si scrive il prompt
@@ -284,7 +285,11 @@ public class AllTogetherChunksCommandLine {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
-							+ "dictionary.\nPlease open a dictionary with 'open +path");
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
+					continue;
+				}
+				if(arg.equals("")){
+					out.println("Please insert a valid chunk to delete...");
 					continue;
 				}
 				if(dictionary.deleteChunk(arg)){
@@ -298,7 +303,7 @@ public class AllTogetherChunksCommandLine {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
-							+ "dictionary.\nPlease open a dictionary with 'open +path");
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
 				String wordToSearch = "";
@@ -324,7 +329,7 @@ public class AllTogetherChunksCommandLine {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
-							+ "dictionary.\nPlease open a dictionary with 'open +path");
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
 				//si fa il refresh 
