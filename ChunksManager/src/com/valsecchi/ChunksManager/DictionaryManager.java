@@ -319,6 +319,15 @@ public class DictionaryManager {
 	}
 
 	/**
+	 * Metodo che mostra se il dizionario è caricato o no.
+	 * 
+	 * @return ritorna True se il dizionario è caricato in memoria
+	 */
+	public boolean isLoaded(){
+		return data.isDictionaryLoaded();
+	}
+	
+	/**
 	 * Metodo che crea un nuovo dizionario.
 	 * 
 	 * @param _path
