@@ -29,7 +29,7 @@ import static java.lang.System.out;
 public class AllTogetherChunksCommandLine {
 
 	/**
-	 * Oggetto DictionaryManager indispensanile per le operazioni sul dizionario
+	 * Oggetto DictionaryManager indispensabile per le operazioni sul dizionario
 	 */
 	private static DictionaryManager dictionary;
 	/**
@@ -108,7 +108,7 @@ public class AllTogetherChunksCommandLine {
 		while (canContinue) {
 			out.print(">>>");
 			command = reader.readLine();
-			//se non sono stati inseriti comandi
+			// se non sono stati inseriti comandi
 			if (command.equals("")) {
 				out.println("Please write a command or help to start...");
 				continue;
@@ -293,15 +293,15 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case EXIT:
-			{
-				//prima di uscire si salva il dizionario
-//				if(dictionary.)
-				out.println("Dictionary saving in progress...");
-				dictionary.closeDictionary();
-				out.println("Dictionary saved successfully!");
+			case EXIT: {
+				// prima di uscire si salva il dizionario
+				if (dictionary!=null && dictionary.isLoaded()) {
+					out.println("Dictionary saving in progress...");
+					dictionary.closeDictionary();
+					out.println("Dictionary saved successfully!");
+				}
 				out.println("Goodbye");
-				//si esce
+				// si esce
 				System.exit(0);
 				break;
 			}
