@@ -96,7 +96,7 @@ public class DictionaryData {
 			type = chu.getChildText("type");
 			unit = chu.getChildText("unit");
 
-			Chunk newChunk = new Chunk(word,hash, type, unit);
+			Chunk newChunk = new Chunk(word, hash, type, unit);
 			// si aggiunge alla mappa
 			this.chunksMap.put(hash, newChunk);
 		}
@@ -136,9 +136,11 @@ public class DictionaryData {
 	 *            viene richiesto come argomento un oggetto DictionaryData da
 	 *            confrontare con quello corrente
 	 */
-	public boolean refreshData(DictionaryData data) {
+	public void refreshData(DictionaryData data) {
 		// si recupera una lista di tutti i chunk del dictionary esterno
 		List<Chunk> externalChunks = data.getAllChunks();
+		// lista dei chunks interni
+		List<Chunk> internalChunks = this.getAllChunks();
 		// array di boolean che memorizza i chunk trovati;
 		boolean[] chunksFounded = new boolean[externalChunks.size()];
 		// ora si inizia il confronto
@@ -146,7 +148,7 @@ public class DictionaryData {
 		for (Chunk extC : externalChunks) {
 			// variabile che indica se è stato trovato
 			boolean founded = false;
-			for (Chunk intC : this.getAllChunks()) {
+			for (Chunk intC : internalChunks) {
 				if (extC.getHash().equals(intC.getHash())) {
 					founded = true;
 					// si esce dal ciclo
@@ -168,7 +170,7 @@ public class DictionaryData {
 					// il ciclo
 					continue;
 				}
-				// se non è da eliminare si aggiorna
+				// se non è da eliminare si aggiunge
 				this.addChunk(externalChunks.get(k));
 				// ora si inseriscono anche le definizioni
 				this.addDefinitions(externalChunks.get(k).getHash(),
@@ -180,15 +182,21 @@ public class DictionaryData {
 				// definizioni: se alcune sono da eliminare o no
 				List<Definition> extDef = data.getDefinitions(externalChunks
 						.get(k));
-				// ora si controlla quali sono da eliminare
+				// si controlla se ci sono definizioni da eliminare per questo
+				// chunk
 				boolean[] to_delete = this.getDefinitionsMustBeRemoved(
 						externalChunks.get(k).getHash(), extDef);
-				// quelle da eliminare in pratica non vengono eliminate da data,
-				// ma solo dalla lista di quelle da aggiungere.
-				for (int z = 0; z < to_delete.length; z++) {
-					if (to_delete[z] == true) {
-						// viene rimossa dalla lista la defiizione
-						extDef.remove(z);
+				// si prosegue solo se ce ne sono da eliminare
+				// si controlla se to_delete non è null
+				if (to_delete != null) {
+					// quelle da eliminare in pratica non vengono eliminate da
+					// data,
+					// ma solo dalla lista di quelle da aggiungere.
+					for (int z = 0; z < to_delete.length; z++) {
+						if (to_delete[z] == true) {
+							// viene rimossa dalla lista la defiizione
+							extDef.remove(z);
+						}
 					}
 				}
 				// ora si aggiungono le definizioni. Il controllo se le
@@ -198,7 +206,6 @@ public class DictionaryData {
 			}
 		}
 		// completata la sincronizzazione
-		return true;
 	}
 
 	/**
@@ -208,12 +215,11 @@ public class DictionaryData {
 	 * 
 	 * @param path
 	 *            percorso in cui salvare il dizionario
-	 * @return ritorna True se il dizionario è stato scritto correttamente
 	 * @throws IOException
 	 *             viene lanciata l'eccezione se ci sono problemi con la
 	 *             scrittura del file
 	 */
-	public boolean writeData(Path path) throws IOException {
+	public void writeData(Path path) throws IOException {
 		// nuovo document
 		Element root = new Element("ChunksDictionary");
 		Document newD = new Document(root);
@@ -263,8 +269,6 @@ public class DictionaryData {
 			// si rilancia l'eccezione
 			throw e;
 		}
-		// se tutto è andato bene si ritorna true
-		return true;
 	}
 
 	/**
@@ -310,7 +314,7 @@ public class DictionaryData {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Metodo che rimuove un chunk dalla lista. N.B.: questo metodo provoca la
 	 * rimozione anche di tutte le definizioni associate. Inoltre l'hash del
@@ -318,12 +322,13 @@ public class DictionaryData {
 	 * verificherà la cancellazione del chunk se ancora presente e verranno
 	 * anche cancellate tutte le relative definizioni.
 	 * 
-	 * @param chunk chunk da rimuovere
+	 * @param chunk
+	 *            chunk da rimuovere
 	 * @return ritorna True se le operazioni vanno a buon fine
 	 */
-	public boolean removeChunk(Chunk chunk){
-		//si controlla se esiste
-		if(this.chunkExist(chunk)){
+	public boolean removeChunk(Chunk chunk) {
+		// si controlla se esiste
+		if (this.chunkExist(chunk)) {
 			this.chunksMap.remove(chunk);
 			// si aggiunge l'hash alla lista dei chunk eliminati
 			this.chunksToDelete.add(chunk.getHash());
@@ -376,7 +381,7 @@ public class DictionaryData {
 	}
 
 	/**
-	 * Metood che rimuove le definizioni del paramentro defs, se presenti,
+	 * Metodo che rimuove le definizioni del paramentro defs, se presenti,
 	 * aventi hashcode uguale a quello passato come parametro. Questo metodo
 	 * rimuove solo quindi le definizioni solo le legate allo stesso chunk.
 	 * Inoltre le definizioni eliminate verranno aggiunte alla mappa
@@ -388,9 +393,11 @@ public class DictionaryData {
 	 * @param defs_to_delete
 	 *            lista di definizioni da eliminare
 	 * @return Viene restituito un array di boolean che rappresenta quali
-	 *         definizioni sono state eliminate e quali no
+	 *         definizioni sono state eliminate e quali no. Se è True vuol dire
+	 *         che (essendo presente) è stata eliminata.
 	 */
-	public boolean[] removeDefinitions(String hash, List<Definition> defs_to_delete) {
+	public boolean[] removeDefinitions(String hash,
+			List<Definition> defs_to_delete) {
 		// si ricava se le definizioni esistono
 		boolean[] exists = this.definitionsExist(hash, defs_to_delete);
 		// lista per inserire le definizioni eliminare
@@ -409,10 +416,45 @@ public class DictionaryData {
 			// se è già contenuto si aggiungono
 			this.defsToDelete.get(hash).addAll(toDelete);
 		} else {
-			// se non c'è si crea
+			// se non c'è si crea e si agginge la lista
 			this.defsToDelete.put(hash, toDelete);
 		}
 		return exists;
+	}
+
+	/**
+	 * Vedere metodo {@link #removeDefinition(String, Definition)}, la
+	 * differenza è che questo metodo accetta una sola definizione e non una
+	 * lista.
+	 * 
+	 * @param hash
+	 *            hash della definizione da eliminare
+	 * @param defs_to_delete
+	 *            definizione da eliminare
+	 * @return ritorna True se la definizione è stata eliminata
+	 */
+	public boolean removeDefinition(Definition defs_to_delete) {
+		// si controlla se esiste
+		boolean exist = this.definitionExist(defs_to_delete);
+		// se esiste si eliminare e si aggiunge alla lista da
+		// eliminare
+		if (exist) {
+			// si rimuove
+			this.defsList.remove(defs_to_delete);
+			// ora si controlla se c'è già un elemento con la stessa hash in
+			// this.defsToDelete
+			String hash = defs_to_delete.getHash();
+			if (this.defsToDelete.containsKey(hash)) {
+				// se è già contenuto si aggiungono
+				this.defsToDelete.get(defs_to_delete.getHash());
+			} else {
+				// se non c'è si crea e si aggiunge la definizione
+				List<Definition> toPut = new ArrayList<>();
+				toPut.add(defs_to_delete);
+				this.defsToDelete.put(hash, toPut);
+			}
+		}
+		return exist;
 	}
 
 	/**
@@ -432,15 +474,18 @@ public class DictionaryData {
 	}
 
 	/**
-	 * Il metodo effettua una ricerca fra i chunks come {@link #getChunksByWord(String)}, ma restituisce solo il chunk 
-	 * la cui parola è esattamente uguale al parametro.
-	 * @param word parola del chunk da cercare
+	 * Il metodo effettua una ricerca fra i chunks come
+	 * {@link #getChunksByWord(String)}, ma restituisce solo il chunk la cui
+	 * parola è esattamente uguale al parametro.
+	 * 
+	 * @param word
+	 *            parola del chunk da cercare
 	 * @return ritorna il chunk se trovato, se no null
 	 */
-	public Chunk getChunkBySpecificWord(String word){
+	public Chunk getChunkBySpecificWord(String word) {
 		Chunk result = null;
 		for (Chunk ck : this.chunksMap.values()) {
-			//da notare l'uso di equals e non contains
+			// da notare l'uso di equals e non contains
 			if (ck.getWord().equals(word)) {
 				result = ck;
 				break;
@@ -448,14 +493,14 @@ public class DictionaryData {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Metodo public che effettua una ricerca tra i vari chunk e restituisce
 	 * quelli che contengono il pattern specificato. La ricerca viene effettuata
 	 * solo sulla parola che caratterizza il chunk. Il metodo viene lasciato
 	 * public perchè è di comodo utilizzo e accessibile dall'esterno senza
-	 * riferimenti ai dati interni.
-	 * La ricerca non controlla l'identità dell'eguaglianza ma solo se pattern è contenuto
+	 * riferimenti ai dati interni. La ricerca non controlla l'identità
+	 * dell'eguaglianza ma solo se pattern è contenuto
 	 * 
 	 * @param pattern
 	 *            filtro da confrontare con i chunks per la ricerca. Il filtro
@@ -571,9 +616,9 @@ public class DictionaryData {
 			// nome
 			List<Chunk> temp = this.getChunksByWord(pattern);
 			// poi si controlla come sopra
-			if (type .equals("")) {
+			if (type.equals("")) {
 				// ora si controlla l'unità
-				if (unit .equals("")) {
+				if (unit.equals("")) {
 					// allora si restituiscono i chunks in temp
 					return temp;
 				} else {
@@ -585,7 +630,7 @@ public class DictionaryData {
 				// si ricerca per tipo
 				List<Chunk> temp2 = this.getChunksByType(temp, type);
 				// si controlla l'unit
-				if (unit .equals("")) {
+				if (unit.equals("")) {
 					// si ritorna temp2
 					return temp2;
 				} else {
@@ -604,7 +649,7 @@ public class DictionaryData {
 	public List<Chunk> getAllChunks() {
 		// si restituisce tutta la lista di chunk
 		List<Chunk> results = new ArrayList<>();
-		for(Chunk c :this.chunksMap.values()){
+		for (Chunk c : this.chunksMap.values()) {
 			results.add(c);
 		}
 		return results;
@@ -635,7 +680,8 @@ public class DictionaryData {
 	/**
 	 * Metodo che restituisce un array di Definition che hanno un certo codice
 	 * hash. Differente da {@link #getDefinition(String)} poichè questo metodo
-	 * accetta un argomento di tipo Chunk. Almeno una definizione è sempre presente.
+	 * accetta un argomento di tipo Chunk. Almeno una definizione è sempre
+	 * presente.
 	 * 
 	 * @param chunk
 	 *            Chunk per la ricerca.
@@ -667,18 +713,20 @@ public class DictionaryData {
 	/**
 	 * Metodo che controlla l'esistenza delle definizioni di un chunk. E'
 	 * fondamentale che le definizioni appertengano tutte a un solo chunk,
-	 * quello con l'hash passata come argomento
+	 * quello con l'hash passata come argomento.
 	 * 
 	 * @param defs
 	 *            lista di definizioni da controllare
 	 * @param hash
 	 *            hash delle definizioni da cercare
 	 * @return restituisce un array di boolean che indica o meno l'esistenza di
-	 *         ognuna delle definizioni nella lista.
+	 *         ognuna delle definizioni nella lista. Ritorna True se la
+	 *         definizione è già presente
 	 */
 	public boolean[] definitionsExist(String hash, List<Definition> defs) {
 		// si controlla se la lista di definizioni esiste
 		// devono essere tutte dello stesso chunk
+		// si ricava la lista dei definizioni esistenti
 		List<Definition> founded = this.getDefinitions(hash);
 		boolean[] listB = new boolean[defs.size()];
 		int index = 0;
@@ -693,6 +741,26 @@ public class DictionaryData {
 			index += 1;
 		}
 		return listB;
+	}
+
+	/**
+	 * Per documentazione vedere {@link #definitionsExist(String, List)}, la
+	 * differenza è che questo metodo accetta solo una definitione.
+	 * 
+	 * @param hash
+	 *            hash della definizione da cercare
+	 * @return ritorna True se la definizione è stata trovata.
+	 */
+	public boolean definitionExist(Definition def) {
+		// si ricava la lista dei definizioni esistenti
+		List<Definition> founded = this.getDefinitions(def.getHash());
+		for (Definition f1 : founded) {
+			if (def.getText().equals(f1.getText())) {
+				return true;
+			}
+		}
+		// se non si trova si restituisce false
+		return false;
 	}
 
 	/**
@@ -722,7 +790,8 @@ public class DictionaryData {
 	/**
 	 * Metodo che controlla se le definizioni passate come parametro e facenti
 	 * riferimento a un certo hash, siano da eliminare o no. Restituisce True se
-	 * la definione è da eliminare.
+	 * la definione è da eliminare, null se non ci sono definizioni con questo
+	 * hash.
 	 * 
 	 * @param hash
 	 *            codice hash che identifica le definizioni
@@ -730,17 +799,23 @@ public class DictionaryData {
 	 *            array di definitioni da controllare
 	 * @return restituisce un array di boolean che indica quali definizioni
 	 *         siano da eliminare. Restituisce True se la definione è da
-	 *         eliminare.
+	 *         eliminare. Restituisce null se non ci sono definizioni con questa
+	 *         hash.
 	 */
-	public boolean[] getDefinitionsMustBeRemoved(String hash, Definition[] defs) {
+	public boolean[] getDefinitionsMustBeRemoved(String hash,
+			List<Definition> defs) {
 		// si ricavano le definizioni da eliminare memorizzate per lo specifico
 		// hash.
+		// se l'hash non è presente si esce
+		if (this.defsToDelete.containsKey(hash) == false) {
+			return null;
+		}
 		List<Definition> toDelete = this.defsToDelete.get(hash);
-		boolean[] to_del = new boolean[toDelete.size()];
+		boolean[] to_del = new boolean[defs.size()];
 		int index = 0;
-		for (Definition d1 : toDelete) {
+		for (Definition d1 : defs) {
 			boolean founded = false;
-			for (Definition d2 : defs) {
+			for (Definition d2 : toDelete) {
 				if (d2.getText().equals(d1.getText())) {
 					founded = true;
 				}
@@ -750,16 +825,6 @@ public class DictionaryData {
 		}
 		// si restituisce il risultato
 		return to_del;
-	}
-
-	/**
-	 * Overloading del metodo
-	 * {@link #getDefinitionsMustBeRemoved(String, Definition[])}
-	 */
-	public boolean[] getDefinitionsMustBeRemoved(String hash,
-			List<Definition> defs) {
-		return this.getDefinitionsMustBeRemoved(hash,
-				(Definition[]) defs.toArray());
 	}
 
 	/**

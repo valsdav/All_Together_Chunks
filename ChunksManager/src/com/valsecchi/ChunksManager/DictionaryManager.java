@@ -34,6 +34,7 @@ public class DictionaryManager {
 	private Map<String, Chunk> buffer;
 	private String dictName;
 	private int mode;
+	public static final int NULL_MODE = 0;
 	public static final int OFFLINE_MODE = 1;
 	public static final int ONLINE_MODE = 2;
 
@@ -69,6 +70,19 @@ public class DictionaryManager {
 		return this.data.loadData();
 	}
 
+	public void closeDictionary() throws IOException{
+		if(mode == OFFLINE_MODE){
+			//allora si scrive e basta
+			data.writeData(path);
+		}
+		else{
+			//prima bisogna aggiornare, si deve creare un dictionaryData con la path attuale
+			data.refreshData(new DictionaryData(this.path));
+			//ora si riscrive
+			data.writeData(this.path);
+		}
+	}
+	
 	/**
 	 * Metodo che aggiunge un Chunk e relative definizioni ai dati dizionario di
 	 * {@link #data}. Se il chunk è stato aggiunto si aggiungono le definizioni,
