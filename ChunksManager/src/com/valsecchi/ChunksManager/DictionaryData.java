@@ -357,23 +357,38 @@ public class DictionaryData {
 	 * @return ritorna un array di boolean che indica quali definizioni sono
 	 *         state aggiunte. Se è False, vuol dire che la definizione non
 	 *         esisteva ed è stata aggiunta, se True significa che la
-	 *         definizione esisteva già;
+	 *         definizione esisteva già; se è null significa che tutte le
+	 *         definizioni sono state aggiunte
 	 * 
 	 */
 	public boolean[] addDefinitions(String hash, List<Definition> defs) {
 		// prima si ricava un array di boolean per controllare se esistono o no
 		boolean[] exists = this.definitionsExist(hash, defs);
-		for (int i = 0; i < defs.size(); i++) {
-			if (exists[i] == false) {
-				// si aggiunge la definizione
-				// prima si controlla che esista già un elemento
-				if (this.defsMap.containsKey(hash)) {
-					// si aggiungono
-					this.defsMap.get(hash).addAll(defs);
-				} else {
-					// se no si aggiunge l'elemento
-					this.defsMap.put(hash, defs);
+		if (exists != null) {
+			for (int i = 0; i < defs.size(); i++) {
+				if (exists[i] == false) {
+					// si aggiunge la definizione
+					// prima si controlla che esista già un elemento
+					if (this.defsMap.containsKey(hash)) {
+						// si aggiunge
+						this.defsMap.get(hash).add(defs.get(i));
+					} else {
+						// se no si aggiunge l'elemento
+						List<Definition> newList = new ArrayList<>();
+						newList.add(defs.get(i));
+						this.defsMap.put(hash, newList);
+					}
 				}
+			}
+		} else {
+			// si aggiungono tutte
+			// prima si controlla che esista già un elemento
+			if (this.defsMap.containsKey(hash)) {
+				// si aggiungono
+				this.defsMap.get(hash).addAll(defs);
+			} else {
+				// se no si aggiungono
+				this.defsMap.put(hash, defs);
 			}
 		}
 		return exists;
@@ -756,12 +771,17 @@ public class DictionaryData {
 	 *            hash delle definizioni da cercare
 	 * @return restituisce un array di boolean che indica o meno l'esistenza di
 	 *         ognuna delle definizioni nella lista. Ritorna True se la
-	 *         definizione è già presente
+	 *         definizione è già presente.Ritorna null se non ci sono
+	 *         definizioni per questo hash
 	 */
 	public boolean[] definitionsExist(String hash, List<Definition> defs) {
 		// si controlla se la lista di definizioni esiste
 		// devono essere tutte dello stesso chunk
 		// si ricava la lista dei definizioni esistenti
+		// si controlla che ci sia l'elemnto con questo hash
+		if (this.defsToDelete.containsKey(hash) == false) {
+			return null;
+		}
 		List<Definition> founded = this.getDefinitions(hash);
 		boolean[] listB = new boolean[defs.size()];
 		int index = 0;
@@ -788,7 +808,11 @@ public class DictionaryData {
 	 */
 	public boolean definitionExist(Definition def) {
 		// si ricava la lista dei definizioni esistenti
-		return this.defsMap.get(def.getHash()).contains(def);
+		if (this.defsMap.containsKey(def.getHash())) {
+			return this.defsMap.get(def.getHash()).contains(def);
+		} else {
+			return false;
+		}
 	}
 
 	/**
