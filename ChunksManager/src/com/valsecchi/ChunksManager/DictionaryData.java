@@ -367,6 +367,26 @@ public class DictionaryData {
 	}
 
 	/**
+	 * Per la documentazione del metodo vedere
+	 * {@link #addDefinitions(String, List)}, questo metodo è diverso solo
+	 * perchè accetta una definizione invece di una lista.
+	 * 
+	 * @param def
+	 *            definizione da aggiungere
+	 * @return ritorna False se è stata aggiunta, perchè vuol dire che non
+	 *         esisteva
+	 */
+	public boolean addDefinition(Definition def) {
+		String hash = def.getHash();
+		boolean exist = this.definitionExist(def);
+		// si aggiunge
+		if (exist == false) {
+			this.defsList.add(def);
+		}
+		return exist;
+	}
+
+	/**
 	 * Metodo che rimuove tutte le definizioni legate a un certo codice hash
 	 * 
 	 * @param hash
