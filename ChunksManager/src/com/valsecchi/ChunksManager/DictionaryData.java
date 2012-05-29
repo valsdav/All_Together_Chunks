@@ -44,7 +44,7 @@ public class DictionaryData {
 	/**
 	 * Lista che contiene tutte le definizioni del dizionario
 	 */
-	private List<Definition> defsList;
+	private Map<String, List<Definition>> defsMap;
 	/**
 	 * Mappa che contiene la lista di definizioni da eliminare per ogni chunk
 	 * rappresentato dal codice hash. Le definizioni vengono raggruppate a
@@ -61,7 +61,7 @@ public class DictionaryData {
 	 */
 	public DictionaryData(Path _path) {
 		chunksMap = new HashMap<>();
-		defsList = new ArrayList<>();
+		defsMap = new HashMap<>();
 		defsToDelete = new HashMap<>();
 		chunksToDelete = new ArrayList<>();
 		dictPath = _path;
@@ -108,7 +108,7 @@ public class DictionaryData {
 			definition = def.getChildText("definition");
 			Definition newDef = new Definition(_hash, definition);
 			// si aggiunge alla lista
-			this.defsList.add(newDef);
+			this.addDefinition(newDef);
 		}
 		dictionaryLoaded = true;
 		// il processo è completato
@@ -223,6 +223,8 @@ public class DictionaryData {
 		// nuovo document
 		Element root = new Element("ChunksDictionary");
 		Document newD = new Document(root);
+		// lista di hash per ricavare le definizioni
+		List<String> hashs = new ArrayList<>();
 		// si aggiungono tutti gli elementi
 		// nuovo document
 		// ciclo per i chunk
@@ -244,20 +246,24 @@ public class DictionaryData {
 			chunk.addContent(u);
 			// si aggiunte a root
 			root.addContent(chunk);
+			// si memorizza la hash
+			hashs.add(c.getHash());
 		}
 		// ciclo per le definizioni
-		for (Definition d : this.defsList) {
-			// nuovo definition radice
-			Element def = new Element("Definitions");
-			// aggiunta elementi
-			Element h = new Element("hash");
-			h.setText(d.getHash());
-			def.addContent(h);
-			Element definit = new Element("definition");
-			definit.setText(d.getText());
-			def.addContent(definit);
-			// si aggiunge a root
-			root.addContent(def);
+		for (String hash : hashs) {
+			for (Definition d : this.defsMap.get(hash)) {
+				// nuovo definition radice
+				Element def = new Element("Definitions");
+				// aggiunta elementi
+				Element h = new Element("hash");
+				h.setText(d.getHash());
+				def.addContent(h);
+				Element definit = new Element("definition");
+				definit.setText(d.getText());
+				def.addContent(definit);
+				// si aggiunge a root
+				root.addContent(def);
+			}
 		}
 		// ora si scrive il document
 		XMLOutputter outputter = new XMLOutputter();
@@ -351,19 +357,71 @@ public class DictionaryData {
 	 * @return ritorna un array di boolean che indica quali definizioni sono
 	 *         state aggiunte. Se è False, vuol dire che la definizione non
 	 *         esisteva ed è stata aggiunta, se True significa che la
-	 *         definizione esisteva già;
+	 *         definizione esisteva già; se è null significa che tutte le
+	 *         definizioni sono state aggiunte
 	 * 
 	 */
 	public boolean[] addDefinitions(String hash, List<Definition> defs) {
 		// prima si ricava un array di boolean per controllare se esistono o no
 		boolean[] exists = this.definitionsExist(hash, defs);
-		for (int i = 0; i < defs.size(); i++) {
-			if (exists[i] == false) {
-				// si aggiunge la definizione
-				this.defsList.add(defs.get(i));
+		if (exists != null) {
+			for (int i = 0; i < defs.size(); i++) {
+				if (exists[i] == false) {
+					// si aggiunge la definizione
+					// prima si controlla che esista già un elemento
+					if (this.defsMap.containsKey(hash)) {
+						// si aggiunge
+						this.defsMap.get(hash).add(defs.get(i));
+					} else {
+						// se no si aggiunge l'elemento
+						List<Definition> newList = new ArrayList<>();
+						newList.add(defs.get(i));
+						this.defsMap.put(hash, newList);
+					}
+				}
+			}
+		} else {
+			// si aggiungono tutte
+			// prima si controlla che esista già un elemento
+			if (this.defsMap.containsKey(hash)) {
+				// si aggiungono
+				this.defsMap.get(hash).addAll(defs);
+			} else {
+				// se no si aggiungono
+				this.defsMap.put(hash, defs);
 			}
 		}
 		return exists;
+	}
+
+	/**
+	 * Per la documentazione del metodo vedere
+	 * {@link #addDefinitions(String, List)}, questo metodo è diverso solo
+	 * perchè accetta una definizione invece di una lista.
+	 * 
+	 * @param def
+	 *            definizione da aggiungere
+	 * @return ritorna False se è stata aggiunta, perchè vuol dire che non
+	 *         esisteva
+	 */
+	public boolean addDefinition(Definition def) {
+		String hash = def.getHash();
+		boolean exist = this.definitionExist(def);
+		// si aggiunge
+		if (exist == false) {
+			// si aggiunge la definizione
+			// prima si controlla che esista già un elemento
+			if (this.defsMap.containsKey(hash)) {
+				// si aggiunge
+				this.defsMap.get(hash).add(def);
+			} else {
+				// se no si aggiunge l'elemento
+				List<Definition> newList = new ArrayList<>();
+				newList.add(def);
+				this.defsMap.put(hash, newList);
+			}
+		}
+		return exist;
 	}
 
 	/**
@@ -373,11 +431,9 @@ public class DictionaryData {
 	 *            codice hash che identifica le definizioni da rimuovere
 	 */
 	public void removeAllDefinitions(String hash) {
-		List<Definition> list = this.getDefinitions(hash);
-		// ora si rimuovono
-		for (Definition d : list) {
-			this.defsList.remove(d);
-		}
+		// si rimuove l'elemento relativo all'insieme delle definizioni con
+		// questo hash
+		this.chunksMap.remove(hash);
 	}
 
 	/**
@@ -405,7 +461,7 @@ public class DictionaryData {
 		for (int i = 0; i < defs_to_delete.size(); i++) {
 			if (exists[i] == true) {
 				// allora si elimina dalla lista
-				this.defsList.remove(defs_to_delete.get(i));
+				this.defsMap.get(hash).remove(defs_to_delete.get(i));
 				// si aggiunge alla lista da eliminare
 				toDelete.add(defs_to_delete.get(i));
 			}
@@ -429,28 +485,28 @@ public class DictionaryData {
 	 * 
 	 * @param hash
 	 *            hash della definizione da eliminare
-	 * @param defs_to_delete
+	 * @param def_to_delete
 	 *            definizione da eliminare
 	 * @return ritorna True se la definizione è stata eliminata
 	 */
-	public boolean removeDefinition(Definition defs_to_delete) {
+	public boolean removeDefinition(Definition def_to_delete) {
 		// si controlla se esiste
-		boolean exist = this.definitionExist(defs_to_delete);
+		boolean exist = this.definitionExist(def_to_delete);
 		// se esiste si eliminare e si aggiunge alla lista da
 		// eliminare
 		if (exist) {
 			// si rimuove
-			this.defsList.remove(defs_to_delete);
+			this.defsMap.get(def_to_delete.getHash()).remove(def_to_delete);
 			// ora si controlla se c'è già un elemento con la stessa hash in
 			// this.defsToDelete
-			String hash = defs_to_delete.getHash();
+			String hash = def_to_delete.getHash();
 			if (this.defsToDelete.containsKey(hash)) {
 				// se è già contenuto si aggiungono
-				this.defsToDelete.get(defs_to_delete.getHash());
+				this.defsToDelete.get(def_to_delete.getHash());
 			} else {
 				// se non c'è si crea e si aggiunge la definizione
 				List<Definition> toPut = new ArrayList<>();
-				toPut.add(defs_to_delete);
+				toPut.add(def_to_delete);
 				this.defsToDelete.put(hash, toPut);
 			}
 		}
@@ -700,14 +756,8 @@ public class DictionaryData {
 	 * @return
 	 */
 	public List<Definition> getDefinitions(String hash) {
-		// si ricercano le definizioni
-		List<Definition> defs = new ArrayList<>();
-		for (Definition d : this.defsList) {
-			if (d.getHash().equals(hash)) {
-				defs.add(d);
-			}
-		}
-		return defs;
+		// si ricavano le definizioni dal map di definizioni
+		return this.defsMap.get(hash);
 	}
 
 	/**
@@ -721,12 +771,17 @@ public class DictionaryData {
 	 *            hash delle definizioni da cercare
 	 * @return restituisce un array di boolean che indica o meno l'esistenza di
 	 *         ognuna delle definizioni nella lista. Ritorna True se la
-	 *         definizione è già presente
+	 *         definizione è già presente.Ritorna null se non ci sono
+	 *         definizioni per questo hash
 	 */
 	public boolean[] definitionsExist(String hash, List<Definition> defs) {
 		// si controlla se la lista di definizioni esiste
 		// devono essere tutte dello stesso chunk
 		// si ricava la lista dei definizioni esistenti
+		// si controlla che ci sia l'elemnto con questo hash
+		if (this.defsToDelete.containsKey(hash) == false) {
+			return null;
+		}
 		List<Definition> founded = this.getDefinitions(hash);
 		boolean[] listB = new boolean[defs.size()];
 		int index = 0;
@@ -745,7 +800,7 @@ public class DictionaryData {
 
 	/**
 	 * Per documentazione vedere {@link #definitionsExist(String, List)}, la
-	 * differenza è che questo metodo accetta solo una definitione.
+	 * differenza è che questo metodo accetta solo una definizione.
 	 * 
 	 * @param hash
 	 *            hash della definizione da cercare
@@ -753,14 +808,11 @@ public class DictionaryData {
 	 */
 	public boolean definitionExist(Definition def) {
 		// si ricava la lista dei definizioni esistenti
-		List<Definition> founded = this.getDefinitions(def.getHash());
-		for (Definition f1 : founded) {
-			if (def.getText().equals(f1.getText())) {
-				return true;
-			}
+		if (this.defsMap.containsKey(def.getHash())) {
+			return this.defsMap.get(def.getHash()).contains(def);
+		} else {
+			return false;
 		}
-		// se non si trova si restituisce false
-		return false;
 	}
 
 	/**
@@ -842,7 +894,7 @@ public class DictionaryData {
 	 */
 	public void clear() {
 		chunksMap.clear();
-		defsList.clear();
+		defsMap.clear();
 		defsToDelete.clear();
 		chunksToDelete.clear();
 	}
