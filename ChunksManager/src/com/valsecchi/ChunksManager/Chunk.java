@@ -62,4 +62,13 @@ public class Chunk {
 		return Unit;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		Chunk c = (Chunk) obj;
+		if (c.getHash().equals(this.getHash())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
