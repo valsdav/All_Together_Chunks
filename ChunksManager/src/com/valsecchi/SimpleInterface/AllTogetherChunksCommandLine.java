@@ -50,6 +50,14 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String ADD_CHUNK = "addchunk";
 	/**
+	 * Variabile che memorizza il comando deletechunk
+	 */
+	private static final String DELETE_CHUNK = "deletechunk";
+	/**
+	 * Variabile che memorizza il comando refresh
+	 */
+	private static final String REFRESH = "refresh";
+	/**
 	 * Variabile che memorizza il comando definition
 	 */
 	private static final String DEFIN = "definition";
@@ -66,17 +74,21 @@ public class AllTogetherChunksCommandLine {
 	 * Array di stringhe che contiene i vari comandi che saranno poi inseriti in
 	 * {@link #COMMANDS_MAP}
 	 */
-	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			FIND, ADD_CHUNK, DEFIN, EXIT };
+	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY, REFRESH,
+			FIND, ADD_CHUNK,DELETE_CHUNK, DEFIN, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_INSTR = {
-			"help +command: displays instructions for command\n-->  help >>> help: displays all commands available with instructions",
-			"open +path:loads the Chunks Dictionary in path",
-			"find +word +type +unit: searches a chunk that contains that word, that it's of that type and unit",
-			"addchunk: displays a prompt to insert the data to add a new chunk",
+			"help +command: it displays instructions for command" +
+			"\n-->  help >>> help: it displays all commands available with instructions",
+			"open +path: it loads the Chunks Dictionary in the 'path' you have written",
+			"refresh: it saves and refreshes the current dictionary",
+			"find +chunk: it searches for a chunk that contains the word 'chunk'" +
+			"\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
+			"addchunk: it displays a prompt to insert datas to add a new chunk",
+			"deletechunk +chunk: it deletes the 'chunk' you have written",
 			"definition +chunk: diplays the definitions of the given chunk",
 			"exit: program will terminate" };
 	/**
@@ -265,6 +277,17 @@ public class AllTogetherChunksCommandLine {
 				} else {
 					out.println("Chunk already in dictionary, definitions refreshed!");
 				}
+				break;
+			}
+			case:DELETE_CHUNK:
+			{
+				// si controlla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path");
+					continue;
+				}
+//				dictionary.
 				break;
 			}
 			case DEFIN: {
