@@ -279,7 +279,7 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case:DELETE_CHUNK:
+			case DELETE_CHUNK:
 			{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
@@ -287,7 +287,11 @@ public class AllTogetherChunksCommandLine {
 							+ "dictionary.\nPlease open a dictionary with 'open +path");
 					continue;
 				}
-//				dictionary.
+				if(dictionary.deleteChunk(arg)){
+					out.println("Chunk deleted successfully!");
+				}else{
+					out.println("Error in deleting chunk! Please try again...");
+				}
 				break;
 			}
 			case DEFIN: {
@@ -316,11 +320,26 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
+			case REFRESH:{
+				// si controlla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path");
+					continue;
+				}
+				//si fa il refresh 
+				if (dictionary!=null && dictionary.isLoaded()) {
+					out.println("Dictionary saving and refreshing in progress...");
+					dictionary.saveDictionary();
+					out.println("Dictionary saved and refreshed successfully!");
+				}
+				break;
+			}
 			case EXIT: {
 				// prima di uscire si salva il dizionario
 				if (dictionary!=null && dictionary.isLoaded()) {
 					out.println("Dictionary saving in progress...");
-					dictionary.closeDictionary();
+					dictionary.saveDictionary();
 					out.println("Dictionary saved successfully!");
 				}
 				out.println("Goodbye");
