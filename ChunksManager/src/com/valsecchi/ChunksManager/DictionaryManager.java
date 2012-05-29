@@ -70,19 +70,31 @@ public class DictionaryManager {
 		return this.data.loadData();
 	}
 
-	public void closeDictionary() throws IOException{
-		if(mode == OFFLINE_MODE){
-			//allora si scrive e basta
+	/**
+	 * Metodo utilizzato per il salvataggio del dizionario. Il metodo a seconda
+	 * della modalità di utilizzo del dizionario agisce diversamente. Se è
+	 * {@link #OFFLINE_MODE} semplicemente scrive i dati su disco. Se è
+	 * {@link #ONLINE_MODE} allora prima effettua il refresh dei dati caricando
+	 * un DictionaryData con il file sul disco, e passandolo a {@link #data} nel
+	 * metodo
+	 * {@link com.valsecchi.ChunksManager.DictionaryData#refreshData(DictionaryData)}
+	 * .Infine scrive i dati su disco.
+	 * 
+	 * @throws IOException
+	 */
+	public void saveDictionary() throws IOException {
+		if (mode == OFFLINE_MODE) {
+			// allora si scrive e basta
 			data.writeData(path);
-		}
-		else{
-			//prima bisogna aggiornare, si deve creare un dictionaryData con la path attuale
+		} else {
+			// prima bisogna aggiornare, si deve creare un dictionaryData con la
+			// path attuale
 			data.refreshData(new DictionaryData(this.path));
-			//ora si riscrive
+			// ora si riscrive
 			data.writeData(this.path);
 		}
 	}
-	
+
 	/**
 	 * Metodo che aggiunge un Chunk e relative definizioni ai dati dizionario di
 	 * {@link #data}. Se il chunk è stato aggiunto si aggiungono le definizioni,
@@ -261,12 +273,12 @@ public class DictionaryManager {
 			}
 			data.addDefinitions(current.getHash(), toAdd);
 			return true;
-		}
-		else{
-			//bisogna prima eliminare il vecchio chunk
+		} else {
+			// bisogna prima eliminare il vecchio chunk
 			data.removeChunk(current);
-			//ora se ne crea uno nuovo
-			this.addChunk(word_new, current.getType(), current.getUnit(), newDefinitions);
+			// ora se ne crea uno nuovo
+			this.addChunk(word_new, current.getType(), current.getUnit(),
+					newDefinitions);
 			return true;
 		}
 
@@ -288,6 +300,18 @@ public class DictionaryManager {
 		} else {
 			return data.getChunkBySpecificWord(word);
 		}
+	}
+
+	/**
+	 * Metodo che elimina dai dati dizionario un Chunk.
+	 * 
+	 * @param word
+	 *            la parola del chunk da eliminare
+	 * @return ritorna True se il chunk è stato correttamente eliminato
+	 */
+	public boolean deleteChunk(String word) {
+		// si rimuove il chunk
+		return data.removeChunk(this.getChunk(word));
 	}
 
 	/**
@@ -323,10 +347,10 @@ public class DictionaryManager {
 	 * 
 	 * @return ritorna True se il dizionario è caricato in memoria
 	 */
-	public boolean isLoaded(){
+	public boolean isLoaded() {
 		return data.isDictionaryLoaded();
 	}
-	
+
 	/**
 	 * Metodo che crea un nuovo dizionario.
 	 * 
