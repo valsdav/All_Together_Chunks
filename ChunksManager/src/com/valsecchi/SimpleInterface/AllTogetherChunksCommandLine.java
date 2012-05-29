@@ -54,6 +54,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String DELETE_CHUNK = "deletechunk";
 	/**
+	 * Variabile che memorizza il comando modifydefinition
+	 */
+	private static final String MODIFY_CHUNK = "modifychunk";
+	/**
 	 * Variabile che memorizza il comando refresh
 	 */
 	private static final String REFRESH = "refresh";
@@ -74,20 +78,22 @@ public class AllTogetherChunksCommandLine {
 	 * Array di stringhe che contiene i vari comandi che saranno poi inseriti in
 	 * {@link #COMMANDS_MAP}
 	 */
-	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY, REFRESH,
-			FIND, ADD_CHUNK,DELETE_CHUNK, DEFIN, EXIT };
+	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
+			REFRESH, FIND, ADD_CHUNK,MODIFY_CHUNK, DELETE_CHUNK, DEFIN, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_INSTR = {
-			"help +command: it displays instructions for command" +
-			"\n-->  help >>> help: it displays all commands available with instructions",
+			"help +command: it displays instructions for command"
+					+ "\n-->  help >>> help: it displays all commands available with instructions",
 			"open +path: it loads the Chunks Dictionary in the 'path' you have written",
 			"refresh: it saves and refreshes the current dictionary",
-			"find +chunk: it searches for a chunk that contains the word 'chunk'" +
-			"\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
-			"addchunk: it displays a prompt to insert datas to add a new chunk",
+			"find +chunk: it searches for a chunk that contains the word 'chunk'"
+					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
+			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              " +
+			"(if the chunk already exists it refresh the datas without deleting definitions",
+			"modifychunk: it displays a prompt to insert datas to modify an existing chunk",
 			"deletechunk +chunk: it deletes the 'chunk' you have written",
 			"definition +chunk: diplays the definitions of the given chunk",
 			"exit: program will terminate" };
@@ -280,21 +286,20 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case DELETE_CHUNK:
-			{
+			case DELETE_CHUNK: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
 							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
-				if(arg.equals("")){
+				if (arg.equals("")) {
 					out.println("Please insert a valid chunk to delete...");
 					continue;
 				}
-				if(dictionary.deleteChunk(arg)){
+				if (dictionary.deleteChunk(arg)) {
 					out.println("Chunk deleted successfully!");
-				}else{
+				} else {
 					out.println("Error in deleting chunk! Please try again...");
 				}
 				break;
@@ -325,15 +330,15 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case REFRESH:{
+			case REFRESH: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
 							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
-				//si fa il refresh 
-				if (dictionary!=null && dictionary.isLoaded()) {
+				// si fa il refresh
+				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary saving and refreshing in progress...");
 					dictionary.saveDictionary();
 					out.println("Dictionary saved and refreshed successfully!");
@@ -342,7 +347,7 @@ public class AllTogetherChunksCommandLine {
 			}
 			case EXIT: {
 				// prima di uscire si salva il dizionario
-				if (dictionary!=null && dictionary.isLoaded()) {
+				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary saving in progress...");
 					dictionary.saveDictionary();
 					out.println("Dictionary saved successfully!");
