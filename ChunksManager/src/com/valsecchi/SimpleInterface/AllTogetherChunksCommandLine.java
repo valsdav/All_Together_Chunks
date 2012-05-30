@@ -60,7 +60,7 @@ public class AllTogetherChunksCommandLine {
 	/**
 	 * Variabile che memorizza il comando refresh
 	 */
-	private static final String REFRESH = "refresh";
+	private static final String SAVE = "save";
 	/**
 	 * Variabile che memorizza il comando definition
 	 */
@@ -79,7 +79,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			REFRESH, FIND, ADD_CHUNK, MODIFY_CHUNK, DELETE_CHUNK, DEFIN, EXIT };
+			SAVE, FIND, ADD_CHUNK, MODIFY_CHUNK, DELETE_CHUNK, DEFIN, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -88,7 +88,7 @@ public class AllTogetherChunksCommandLine {
 			"help +command: it displays instructions for command"
 					+ "\n-->  help >>> help: it displays all commands available with instructions",
 			"open +path: it loads the Chunks Dictionary in the 'path' you have written",
-			"refresh: it saves and refreshes the current dictionary",
+			"save: it saves and refreshes the current dictionary",
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
 			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
@@ -394,7 +394,7 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case REFRESH: {
+			case SAVE: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
