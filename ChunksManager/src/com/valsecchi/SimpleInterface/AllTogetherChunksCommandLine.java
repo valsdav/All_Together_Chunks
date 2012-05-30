@@ -256,10 +256,10 @@ public class AllTogetherChunksCommandLine {
 				}
 				// si scrive il prompt
 				String chunkWord;
-				if(!arg.equals("")){
+				if (!arg.equals("")) {
 					out.println("--> chunk:  " + arg);
 					chunkWord = arg;
-				}else{
+				} else {
 					out.print("--> chunk:  ");
 					chunkWord = reader.readLine().toLowerCase();
 				}
@@ -291,8 +291,7 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case MODIFY_CHUNK:
-			{
+			case MODIFY_CHUNK: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -301,10 +300,10 @@ public class AllTogetherChunksCommandLine {
 				}
 				// si scrive il prompt
 				String chunkWord;
-				if(!arg.equals("")){
+				if (!arg.equals("")) {
 					out.println("--> chunk to change:  " + arg);
 					chunkWord = arg;
-				}else{
+				} else {
 					out.print("--> chunk to change:  ");
 					chunkWord = reader.readLine().toLowerCase();
 				}
@@ -314,7 +313,7 @@ public class AllTogetherChunksCommandLine {
 				}
 				out.print("--> new chunk (leave it blanck if you want to change only definitions):  ");
 				String newChunk = reader.readLine().toLowerCase();
-				
+
 				out.print("--> please write at least one definition (write separated by ;):");
 				String definitions = reader.readLine();
 				if (definitions.equals("")) {
@@ -326,10 +325,29 @@ public class AllTogetherChunksCommandLine {
 				while (tok2.hasMoreTokens()) {
 					defs.add(tok2.nextToken().trim().toLowerCase());
 				}
-				//ora si chima il dizionario
-				dictionary.modifyChunk(chunkWord,newChunk, defs);
-				
-				
+				// ora si chima il dizionario
+				if (dictionary.modifyChunk(chunkWord, newChunk, defs)) {
+					out.println("Chunk modified successfully!");
+					continue;
+				} else {
+					// se è stato ritornato false significa che il chunk non
+					// esiste
+					// si chiede se aggiungerlo
+					out.println("Chunk not exists!");
+					out.print("Do you want to add it? (y/n):  ");
+					String answer = reader.readLine();
+					if (answer.equals("") || answer.equals("n")) {
+						out.println("Chunk not added!");
+					} else if (answer.equals("y")) {
+						out.print("--> type:  ");
+						String type = reader.readLine().trim().toLowerCase();
+						out.print("--> unit:  ");
+						String unit = reader.readLine().trim().toLowerCase();
+						// si aggiunge
+						dictionary.addChunk(newChunk, type, unit, defs);
+						out.println("Chunk added successfully!");
+					}
+				}
 				break;
 			}
 			case DELETE_CHUNK: {
@@ -343,7 +361,7 @@ public class AllTogetherChunksCommandLine {
 					out.println("Please insert a valid chunk to delete...");
 					continue;
 				}
-				if (dictionary.deleteChunk(arg)) {
+				if (dictionary.removeChunk(arg)) {
 					out.println("Chunk deleted successfully!");
 				} else {
 					out.println("Error in deleting chunk! Please try again...");
