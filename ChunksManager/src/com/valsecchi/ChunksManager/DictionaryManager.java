@@ -272,7 +272,8 @@ public class DictionaryManager {
 	 *            nuova parola del chunk
 	 * @param newDefinition
 	 *            array di stringhe che contengono le definizioni da impostare
-	 * @return ritorna True se l'operazioni ha avuto successo, False se il chunk non esiste.
+	 * @return ritorna True se l'operazioni ha avuto successo, False se il chunk
+	 *         non esiste.
 	 */
 	public boolean modifyChunk(String word_original, String word_new,
 			List<String> newDefinitions) {
@@ -312,10 +313,15 @@ public class DictionaryManager {
 	 * 
 	 * @param word
 	 *            la parola del chunk da eliminare
-	 * @return ritorna True se il chunk è stato correttamente eliminato
+	 * @return ritorna True se il chunk è stato correttamente eliminato, False,
+	 *         se il chunk non esisteva
 	 */
 	public boolean removeChunk(String word) {
 		// si rimuove il chunk
+		Chunk current = this.getChunk(word);
+		if (current == null) {
+			return false;
+		}
 		boolean result = data.removeChunk(this.getChunk(word));
 		// si rimuove dal buffer se c'è
 		if (result == true && buffer.containsKey(word)) {
