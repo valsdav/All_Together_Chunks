@@ -79,7 +79,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			REFRESH, FIND, ADD_CHUNK,MODIFY_CHUNK, DELETE_CHUNK, DEFIN, EXIT };
+			REFRESH, FIND, ADD_CHUNK, MODIFY_CHUNK, DELETE_CHUNK, DEFIN, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -91,8 +91,8 @@ public class AllTogetherChunksCommandLine {
 			"refresh: it saves and refreshes the current dictionary",
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
-			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              " +
-			"(if the chunk already exists it refresh the datas without deleting definitions",
+			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
+					+ "(if the chunk already exists it refresh the datas without deleting definitions",
 			"modifychunk: it displays a prompt to insert datas to modify an existing chunk",
 			"deletechunk +chunk: it deletes the 'chunk' you have written",
 			"definition +chunk: diplays the definitions of the given chunk",
@@ -147,7 +147,7 @@ public class AllTogetherChunksCommandLine {
 				k--;
 			}
 			// argomenti del comando
-			String arg = build.toString();
+			String arg = build.toString().toLowerCase();
 			// ora abbiamo i comandi incapsulati
 			// si controlla il comando primo comando scelto
 			switch (mainCommand) {
@@ -173,7 +173,6 @@ public class AllTogetherChunksCommandLine {
 					}
 				}
 				break;
-
 			}
 			case OPEN_DICTIONARY: {
 				// si ricava la seconda parte del comando se no si inserisce
@@ -256,8 +255,14 @@ public class AllTogetherChunksCommandLine {
 					continue;
 				}
 				// si scrive il prompt
-				out.print("--> chunk:  ");
-				String chunkWord = reader.readLine().toLowerCase();
+				String chunkWord;
+				if(!arg.equals("")){
+					out.println("--> chunk:  " + arg);
+					chunkWord = arg;
+				}else{
+					out.print("--> chunk:  ");
+					chunkWord = reader.readLine().toLowerCase();
+				}
 				if (chunkWord.equals("")) {
 					out.println("Please try again and insert a chunk...");
 					continue;
@@ -266,10 +271,10 @@ public class AllTogetherChunksCommandLine {
 				String type = reader.readLine().trim().toLowerCase();
 				out.print("--> unit:  ");
 				String unit = reader.readLine().trim().toLowerCase();
-				out.print("--> definitions (write separated by ;):  ");
+				out.print("--> please write at least one definition (write separated by ;):  ");
 				String definitions = reader.readLine();
 				if (definitions.equals("")) {
-					out.println("Please try again and insert almost one definition...");
+					out.println("Please try again and insert at least one definition...");
 					continue;
 				}
 				List<String> defs = new ArrayList<>();
@@ -284,6 +289,47 @@ public class AllTogetherChunksCommandLine {
 				} else {
 					out.println("Chunk already in dictionary, definitions refreshed!");
 				}
+				break;
+			}
+			case MODIFY_CHUNK:
+			{
+				// si controlla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
+					continue;
+				}
+				// si scrive il prompt
+				String chunkWord;
+				if(!arg.equals("")){
+					out.println("--> chunk to change:  " + arg);
+					chunkWord = arg;
+				}else{
+					out.print("--> chunk to change:  ");
+					chunkWord = reader.readLine().toLowerCase();
+				}
+				if (chunkWord.equals("")) {
+					out.println("Please try again and insert a chunk...");
+					continue;
+				}
+				out.print("--> new chunk (leave it blanck if you want to change only definitions):  ");
+				String newChunk = reader.readLine().toLowerCase();
+				
+				out.print("--> please write at least one definition (write separated by ;):");
+				String definitions = reader.readLine();
+				if (definitions.equals("")) {
+					out.println("Please try again and insert at least one definition...");
+					continue;
+				}
+				List<String> defs = new ArrayList<>();
+				StringTokenizer tok2 = new StringTokenizer(definitions, ";");
+				while (tok2.hasMoreTokens()) {
+					defs.add(tok2.nextToken().trim().toLowerCase());
+				}
+				//ora si chima il dizionario
+				dictionary.modifyChunk(chunkWord,newChunk, defs);
+				
+				
 				break;
 			}
 			case DELETE_CHUNK: {
