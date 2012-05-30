@@ -93,6 +93,29 @@ public class DictionaryManager {
 			// ora si riscrive
 			data.writeData(this.path);
 		}
+		// si svuota il buffer
+		buffer.clear();
+	}
+
+	/**
+	 * Metodo che ANNULLA TUTTE LE MODIFICHE fatte al dictionary dal
+	 * caricamento. Per fare ciò ricrea l'oggetto {@link #data} con la path del
+	 * dizionario senza prima chiamare
+	 * {@link DictionaryData#refreshData(DictionaryData)}.
+	 * 
+	 * @return ritorna True se le operazioni vengono completate con successo,
+	 *         False se ci sono dei problemi di IO.
+	 */
+	public boolean undoChanges() {
+		// si ricrea data
+		data = new DictionaryData(this.path);
+		// si caricano i dati
+		try {
+			data.loadData();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -285,6 +308,23 @@ public class DictionaryManager {
 	}
 
 	/**
+	 * Metodo che elimina dai dati dizionario un Chunk.
+	 * 
+	 * @param word
+	 *            la parola del chunk da eliminare
+	 * @return ritorna True se il chunk è stato correttamente eliminato
+	 */
+	public boolean deleteChunk(String word) {
+		// si rimuove il chunk
+		boolean result = data.removeChunk(this.getChunk(word));
+		// si rimuove dal buffer se c'è
+		if (result == true && buffer.containsKey(word)) {
+			buffer.remove(word);
+		}
+		return result;
+	}
+
+	/**
 	 * Metodo privato che ricava un chunk dalla corrispettiva parola, prima
 	 * cercandolo nel buffer e in caso non sia presente, caricandolo dalla
 	 * memoria ({@link #data}). Questo metodo è la scorciatoia per ricavare un
@@ -300,18 +340,6 @@ public class DictionaryManager {
 		} else {
 			return data.getChunkBySpecificWord(word);
 		}
-	}
-
-	/**
-	 * Metodo che elimina dai dati dizionario un Chunk.
-	 * 
-	 * @param word
-	 *            la parola del chunk da eliminare
-	 * @return ritorna True se il chunk è stato correttamente eliminato
-	 */
-	public boolean deleteChunk(String word) {
-		// si rimuove il chunk
-		return data.removeChunk(this.getChunk(word));
 	}
 
 	/**
