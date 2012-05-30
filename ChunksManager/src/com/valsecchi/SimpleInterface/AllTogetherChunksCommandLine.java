@@ -364,7 +364,7 @@ public class AllTogetherChunksCommandLine {
 				if (dictionary.removeChunk(arg)) {
 					out.println("Chunk deleted successfully!");
 				} else {
-					out.println("Error in deleting chunk! Please try again...");
+					out.println("Chunk doesn't exist! Please try again...");
 				}
 				break;
 			}
