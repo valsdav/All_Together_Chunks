@@ -57,9 +57,17 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String DELETE_CHUNK = "deletechunk";
 	/**
+	 * Variabile shortcut per DELETE_CHUNK
+	 */
+	private static final String DELETE = "delete";
+	/**
 	 * Variabile che memorizza il comando modifydefinition
 	 */
 	private static final String MODIFY_CHUNK = "modifychunk";
+	/**
+	 * Variabile shortcut per MODIFY_CHUNK
+	 */
+	private static final String MODIFY = "modify";
 	/**
 	 * Variabile che memorizza il comando refresh
 	 */
@@ -86,7 +94,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, FIND, ADD_CHUNK, ADD,MODIFY_CHUNK, DELETE_CHUNK, DEFIN,DEF, EXIT };
+			SAVE, FIND, ADD_CHUNK, ADD,MODIFY_CHUNK, DELETE_CHUNK,DELETE, DEFIN,DEF, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -102,7 +110,9 @@ public class AllTogetherChunksCommandLine {
 					+ "(if the chunk already exists it refresh the datas without deleting definitions",
 			"add: shortcut for command 'addchunk'",
 			"modifychunk: it displays a prompt to insert datas to modify an existing chunk",
+			"modify: shortcut for command 'modifychunk'",
 			"deletechunk +chunk: it deletes the 'chunk' you have written",
+			"delete: shortcut for command 'deletechunk",
 			"definition +chunk: diplays the definitions of the given chunk",
 			"def: shortcut for command 'definition'",
 			"exit: program will terminate" };
@@ -302,7 +312,9 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case MODIFY_CHUNK: {
+			case MODIFY_CHUNK:
+			case MODIFY:
+			{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -361,7 +373,9 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case DELETE_CHUNK: {
+			case DELETE_CHUNK:
+			case DELETE:
+			{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
