@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,6 +49,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String ADD_CHUNK = "addchunk";
 	/**
+	 * Varibile shorcut per ADD_CHUNK
+	 */
+	private static final String ADD = "add";
+	/**
 	 * Variabile che memorizza il comando deletechunk
 	 */
 	private static final String DELETE_CHUNK = "deletechunk";
@@ -66,6 +69,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String DEFIN = "definition";
 	/**
+	 * Variabile shotcut per DEFIN
+	 */
+	private static final String DEF = "def";
+	/**
 	 * Variabile che memorizza il comando exit
 	 */
 	private static final String EXIT = "exit";
@@ -79,7 +86,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, FIND, ADD_CHUNK, MODIFY_CHUNK, DELETE_CHUNK, DEFIN, EXIT };
+			SAVE, FIND, ADD_CHUNK, ADD,MODIFY_CHUNK, DELETE_CHUNK, DEFIN,DEF, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -93,9 +100,11 @@ public class AllTogetherChunksCommandLine {
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
 			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
 					+ "(if the chunk already exists it refresh the datas without deleting definitions",
+			"add: shortcut for command 'addchunk'",
 			"modifychunk: it displays a prompt to insert datas to modify an existing chunk",
 			"deletechunk +chunk: it deletes the 'chunk' you have written",
 			"definition +chunk: diplays the definitions of the given chunk",
+			"def: shortcut for command 'definition'",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
@@ -247,7 +256,9 @@ public class AllTogetherChunksCommandLine {
 				out.println("N° of Chunks:  " + results.size());
 				break;
 			}
-			case ADD_CHUNK: {
+			case ADD_CHUNK:
+			case ADD:
+			{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -368,7 +379,8 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case DEFIN: {
+			case DEFIN:
+			case DEF:{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
