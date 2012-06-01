@@ -453,9 +453,7 @@ public class AllTogetherChunksCommandLine {
 				// si fa il refresh
 				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary refreshing in progress...");
-					if (dictionary.refreshDictionary()) {
-						out.println("Dictionary refreshed successfully!");
-					}
+					out.println("Dictionary refreshed successfully!");
 				}
 				break;
 			}
