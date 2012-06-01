@@ -83,7 +83,7 @@ public class AllTogetherChunksCommandLine {
 	/**
 	 * Variabile che memorizza il comando mode
 	 */
-	private static final String MODE = "mode";
+	private static final String MODE = "setmode";
 	/**
 	 * Variabile che memorizza il comando definition
 	 */
@@ -110,8 +110,8 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, CREATE,REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,MODIFY,
-			DELETE_CHUNK, DELETE, DEFIN, DEF,MODE, EXIT };
+			SAVE, CREATE, REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
+			MODIFY, DELETE_CHUNK, DELETE, DEFIN, DEF, MODE, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -135,8 +135,8 @@ public class AllTogetherChunksCommandLine {
 			"delete: shortcut for command 'deletechunk",
 			"definition +chunk: diplays the definitions of the given chunk",
 			"def: shortcut for command 'definition'",
-			"mode +offline/online: it changes the mode of the program, you can insert offline or online" +
-			" to disable or enable the refresh of a shared dictionary",
+			"setmode +offline/online: it changes the mode of the program, you can insert offline or online"
+					+ " to disable or enable the refresh of a shared dictionary",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
@@ -249,17 +249,16 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 			case CREATE: {
-				if(arg.equals("")){
+				if (arg.equals("")) {
 					out.println("Please try againt and insert a valid path...");
 					continue;
 				}
-				if(dictionary.CreateDictionary(arg)){
+				if (dictionary.CreateDictionary(arg)) {
 					out.println("New dictionary successfully created");
-				}
-				else{
+				} else {
 					out.println("Error! Try again");
 				}
-				//si crea un nuovo dizionario
+				// si crea un nuovo dizionario
 				break;
 			}
 			case FIND: {
@@ -479,6 +478,23 @@ public class AllTogetherChunksCommandLine {
 				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary refreshing in progress...");
 					out.println("Dictionary refreshed successfully!");
+				}
+				break;
+			}
+			case MODE: {
+				// si controlla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
+					continue;
+				}
+				// ora si controlla il valore passato
+				switch (arg) {
+				case "offline":
+					dictionary.changeMode(DictionaryManager.OFFLINE_MODE);
+					break;
+				case "online":
+					dictionary.changeMode(DictionaryManager.ONLINE_MODE);
 				}
 				break;
 			}
