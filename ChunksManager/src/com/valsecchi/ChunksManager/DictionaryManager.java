@@ -79,7 +79,9 @@ public class DictionaryManager {
 	 * metodo
 	 * {@link com.valsecchi.ChunksManager.DictionaryData#refreshData(DictionaryData)}
 	 * .Infine scrive i dati su disco.
-	 * @return si ritorna True se è stato salvato, False se il dizionario non è caricato
+	 * 
+	 * @return si ritorna True se è stato salvato, False se il dizionario non è
+	 *         caricato
 	 * @throws IOException
 	 */
 	public boolean saveDictionary() throws IOException {
@@ -97,7 +99,7 @@ public class DictionaryManager {
 			}
 			// si svuota il buffer
 			buffer.clear();
-			//ri ritorna true
+			// ri ritorna true
 			return true;
 		} else {
 			// se non è caricato si ritorna false
@@ -377,6 +379,31 @@ public class DictionaryManager {
 			return this.buffer.get(word);
 		} else {
 			return data.getChunkBySpecificWord(word);
+		}
+	}
+
+	/**
+	 * Metodo che cambia la modalità del dizionario, facendo il salvataggio a
+	 * seconda del caso specifico.
+	 * 
+	 * @param mode
+	 *            nuova modalità da impostare
+	 * @return si ritorna True se il cambio è avvenutop con successo, False se
+	 *         il valore di _mode non era valido
+	 * @throws IOException
+	 *             viene lanciata l'eccezione in caso il salvataggio provochi
+	 *             dei problemi
+	 */
+	public boolean changeMode(int _mode) throws IOException {
+		// prima si salva il dizionario
+		this.saveDictionary();
+		// ora si imposta la modalità
+		if (_mode == OFFLINE_MODE || _mode == ONLINE_MODE) {
+			// si imposta
+			this.mode = _mode;
+			return true;
+		}else{
+			return false;
 		}
 	}
 
