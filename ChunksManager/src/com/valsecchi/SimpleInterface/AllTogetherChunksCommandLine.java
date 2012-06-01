@@ -81,6 +81,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String REFRESH = "refresh";
 	/**
+	 * Variabile che memorizza il comando mode
+	 */
+	private static final String MODE = "mode";
+	/**
 	 * Variabile che memorizza il comando definition
 	 */
 	private static final String DEFIN = "definition";
@@ -106,8 +110,8 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, CREATE,REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
-			DELETE_CHUNK, DELETE, DEFIN, DEF, EXIT };
+			SAVE, CREATE,REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,MODIFY,
+			DELETE_CHUNK, DELETE, DEFIN, DEF,MODE, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -131,6 +135,8 @@ public class AllTogetherChunksCommandLine {
 			"delete: shortcut for command 'deletechunk",
 			"definition +chunk: diplays the definitions of the given chunk",
 			"def: shortcut for command 'definition'",
+			"mode +offline/online: it changes the mode of the program, you can insert offline or online" +
+			" to disable or enable the refresh of a shared dictionary",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
