@@ -495,21 +495,30 @@ public class AllTogetherChunksCommandLine {
 					if (dictionary.changeMode(DictionaryManager.OFFLINE_MODE)) {
 						out.println("Mode successfully changed!");
 					} else {
-						out.println("Mode already offline!");
+						out.println("Mode already OFFLINE!");
 					}
 					break;
 				case "online":
 					if (dictionary.changeMode(DictionaryManager.ONLINE_MODE)) {
 						out.println("Mode successfully changed!");
 					} else {
-						out.println("Mode already online!");
+						out.println("Mode already ONLINE!");
 					}
 					break;
 				case "":
-//					out.println("Current mode:  " + )
-				}
+					int m = dictionary.getMode();
+					if(m == DictionaryManager.OFFLINE_MODE){
+					out.println("Current mode: OFFLINE");}
+					else{
+						out.println("Current mode: ONLINE");}
+					break;
+				default:
+					out.println("Please insert offline/online. Leave 'setmode' blank " +
+							"to show the current mode...");
+					break;
+					}
 				break;
-			}
+				}
 			case EXIT: {
 				// prima di uscire si salva il dizionario
 				if (dictionary != null && dictionary.isLoaded()) {
@@ -527,7 +536,7 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 		}
-	}
+}
 
 	/**
 	 * Il metodo inserisce in {@link #COMMANDS_MAP} tutti i comandi con relative
