@@ -69,9 +69,13 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String MODIFY = "modify";
 	/**
-	 * Variabile che memorizza il comando refresh
+	 * Variabile che memorizza il comando save
 	 */
 	private static final String SAVE = "save";
+	/**
+	 * Variabile che memorizza il comando refresh
+	 */
+	private static final String REFRESH = "refresh";
 	/**
 	 * Variabile che memorizza il comando definition
 	 */
@@ -98,7 +102,8 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE,UNDO, FIND, ADD_CHUNK, ADD,MODIFY_CHUNK, DELETE_CHUNK,DELETE, DEFIN,DEF, EXIT };
+			SAVE, REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
+			DELETE_CHUNK, DELETE, DEFIN, DEF, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -108,6 +113,7 @@ public class AllTogetherChunksCommandLine {
 					+ "\n-->  help >>> help: it displays all commands available with instructions",
 			"open +path: it loads the Chunks Dictionary in the 'path' you have written",
 			"save: it saves and refreshes the current dictionary",
+			"refresh: it only refreshes the current dictionary if the mode is ONLINE",
 			"undochanges: it deletes all the changes you have done since dictionary was loaded",
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
@@ -272,8 +278,7 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 			case ADD_CHUNK:
-			case ADD:
-			{
+			case ADD: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -318,8 +323,7 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 			case MODIFY_CHUNK:
-			case MODIFY:
-			{
+			case MODIFY: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -379,8 +383,7 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 			case DELETE_CHUNK:
-			case DELETE:
-			{
+			case DELETE: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -399,7 +402,7 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 			case DEFIN:
-			case DEF:{
+			case DEF: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -437,6 +440,22 @@ public class AllTogetherChunksCommandLine {
 					out.println("Dictionary saving and refreshing in progress...");
 					dictionary.saveDictionary();
 					out.println("Dictionary saved and refreshed successfully!");
+				}
+				break;
+			}
+			case REFRESH: {
+				// si controlla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
+					continue;
+				}
+				// si fa il refresh
+				if (dictionary != null && dictionary.isLoaded()) {
+					out.println("Dictionary refreshing in progress...");
+					if (dictionary.refreshDictionary()) {
+						out.println("Dictionary refreshed successfully!");
+					}
 				}
 				break;
 			}
