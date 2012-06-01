@@ -317,8 +317,8 @@ public class DictionaryManager {
 			return false;
 		}
 		// si controlla se si vuole modificare solo le definizioni o anche il
-		// chunk
-		if (word_original.equals(word_new)) {
+		// chun
+		if (word_original.equals(word_new) || word_new.equals("")) {
 			// allora si modificano le definizioni.
 			List<Definition> todelete = this.compareDefinitionToDelete(
 					newDefinitions, data.getDefinitions(current));
@@ -415,12 +415,21 @@ public class DictionaryManager {
 
 	/**
 	 * Metodo che esponde il {@link #mode} corrente del dictionary manager
+	 * 
 	 * @return
 	 */
-	public int getMode(){
+	public int getMode() {
 		return this.mode;
 	}
-	
+
+	/**
+	 * Metodo che restituisce il nome del dizionario rappresentato da questo
+	 * oggetto DictionaryManager
+	 */
+	public String getDictionaryName() {
+		return this.dictName;
+	}
+
 	/**
 	 * Metodo che compara due liste di definizioni per determinare quelle da
 	 * eliminare in old
