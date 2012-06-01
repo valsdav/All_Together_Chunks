@@ -79,22 +79,30 @@ public class DictionaryManager {
 	 * metodo
 	 * {@link com.valsecchi.ChunksManager.DictionaryData#refreshData(DictionaryData)}
 	 * .Infine scrive i dati su disco.
-	 * 
+	 * @return si ritorna True se è stato salvato, False se il dizionario non è caricato
 	 * @throws IOException
 	 */
-	public void saveDictionary() throws IOException {
-		if (mode == OFFLINE_MODE) {
-			// allora si scrive e basta
-			data.writeData(path);
+	public boolean saveDictionary() throws IOException {
+		if (isLoaded() == true) {
+			if (mode == OFFLINE_MODE) {
+				// allora si scrive e basta
+				data.writeData(path);
+			} else {
+				// prima bisogna aggiornare, si deve creare un dictionaryData
+				// con la
+				// path attuale
+				data.refreshData(new DictionaryData(this.path));
+				// ora si riscrive
+				data.writeData(this.path);
+			}
+			// si svuota il buffer
+			buffer.clear();
+			//ri ritorna true
+			return true;
 		} else {
-			// prima bisogna aggiornare, si deve creare un dictionaryData con la
-			// path attuale
-			data.refreshData(new DictionaryData(this.path));
-			// ora si riscrive
-			data.writeData(this.path);
+			// se non è caricato si ritorna false
+			return false;
 		}
-		// si svuota il buffer
-		buffer.clear();
 	}
 
 	/**
