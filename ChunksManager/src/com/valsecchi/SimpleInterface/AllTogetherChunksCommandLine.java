@@ -81,6 +81,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String DEF = "def";
 	/**
+	 * Variabile che memorizza il comando undochanges
+	 */
+	private static final String UNDO = "undochanges";
+	/**
 	 * Variabile che memorizza il comando exit
 	 */
 	private static final String EXIT = "exit";
@@ -94,7 +98,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, FIND, ADD_CHUNK, ADD,MODIFY_CHUNK, DELETE_CHUNK,DELETE, DEFIN,DEF, EXIT };
+			SAVE,UNDO, FIND, ADD_CHUNK, ADD,MODIFY_CHUNK, DELETE_CHUNK,DELETE, DEFIN,DEF, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -104,6 +108,7 @@ public class AllTogetherChunksCommandLine {
 					+ "\n-->  help >>> help: it displays all commands available with instructions",
 			"open +path: it loads the Chunks Dictionary in the 'path' you have written",
 			"save: it saves and refreshes the current dictionary",
+			"undochanges: it deletes all the changes you have done since dictionary was loaded",
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
 			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
