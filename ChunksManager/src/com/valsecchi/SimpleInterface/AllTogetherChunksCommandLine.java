@@ -83,7 +83,11 @@ public class AllTogetherChunksCommandLine {
 	/**
 	 * Variabile che memorizza il comando mode
 	 */
-	private static final String MODE = "setmode";
+	private static final String SETMODE = "setmode";
+	/**
+	 * Variabile shortcut per setmode
+	 */
+	private static final String MODE = "mode";
 	/**
 	 * Variabile che memorizza il comando definition
 	 */
@@ -111,7 +115,7 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
 			SAVE, CREATE, REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
-			MODIFY, DELETE_CHUNK, DELETE, DEFIN, DEF, MODE, EXIT };
+			MODIFY, DELETE_CHUNK, DELETE, DEFIN, DEF, SETMODE, MODE, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -136,8 +140,9 @@ public class AllTogetherChunksCommandLine {
 			"definition +chunk: diplays the definitions of the given chunk",
 			"def: shortcut for command 'definition'",
 			"setmode +offline/online: it changes the mode of the program, you can insert offline or online. (Default mode is online)"
-					+ " to disable or enable the refresh of a shared dictionary"+
-					"\n-->  setmode >>> setmode: without parameters it shows the current mode of the program",
+					+ " to disable or enable the refresh of a shared dictionary"
+					+ "\n-->  setmode >>> setmode: without parameters it shows the current mode of the program",
+			"mode: shotcut for command 'setmode'",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
@@ -254,7 +259,7 @@ public class AllTogetherChunksCommandLine {
 					out.println("Please try againt and insert a valid path...");
 					continue;
 				}
-				if (dictionary.CreateDictionary(arg)) {
+				if (DictionaryManager.CreateDictionary(arg)) {
 					out.println("New dictionary successfully created");
 				} else {
 					out.println("Error! Try again");
@@ -464,7 +469,7 @@ public class AllTogetherChunksCommandLine {
 				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary saving and refreshing in progress...");
 					dictionary.saveDictionary();
-					out.println("Dictionary saved and refreshed successfully!");
+					out.println("Dictionary  successfully saved and refreshed!");
 				}
 				break;
 			}
@@ -478,11 +483,40 @@ public class AllTogetherChunksCommandLine {
 				// si fa il refresh
 				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary refreshing in progress...");
-					out.println("Dictionary refreshed successfully!");
+					out.println("Dictionary successfully refreshed !");
 				}
 				break;
 			}
-			case MODE: {
+			case UNDO:{
+				// si controlla che sia caricato un dizionario
+				if (dictLoaded == false) {
+					out.println("You cannot use this command unless you open a "
+							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
+					continue;
+				}
+				//si chiede prima conferma
+				out.print("Are you sure to delete all the changes you have made during this session? (y/n)");
+				String ans = reader.readLine();
+				if(ans.equals("y")){
+					//allora si annullano le modifiche
+					if(dictionary.undoChanges()){
+						out.println("Changes successfully deleted!");
+					}
+					else{
+						out.println("Error! Please try again...");
+					}
+				}
+				else if(ans.equals("n")){
+					out.println("Operation cancelled!");
+				}
+				else{
+					out.println("Please try again and insert a valid answer...");
+				}
+				break;
+			}
+			case SETMODE: 
+			case MODE:
+			{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
@@ -507,18 +541,19 @@ public class AllTogetherChunksCommandLine {
 					break;
 				case "":
 					int m = dictionary.getMode();
-					if(m == DictionaryManager.OFFLINE_MODE){
-					out.println("Current mode: OFFLINE");}
-					else{
-						out.println("Current mode: ONLINE");}
+					if (m == DictionaryManager.OFFLINE_MODE) {
+						out.println("Current mode: OFFLINE");
+					} else {
+						out.println("Current mode: ONLINE");
+					}
 					break;
 				default:
-					out.println("Please insert offline/online. Leave 'setmode' blank " +
-							"to show the current mode...");
+					out.println("Please insert offline/online. Leave 'setmode' blank "
+							+ "to show the current mode...");
 					break;
-					}
-				break;
 				}
+				break;
+			}
 			case EXIT: {
 				// prima di uscire si salva il dizionario
 				if (dictionary != null && dictionary.isLoaded()) {
@@ -536,7 +571,7 @@ public class AllTogetherChunksCommandLine {
 				break;
 			}
 		}
-}
+	}
 
 	/**
 	 * Il metodo inserisce in {@link #COMMANDS_MAP} tutti i comandi con relative
