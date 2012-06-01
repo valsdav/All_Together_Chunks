@@ -623,7 +623,7 @@ public class DictionaryData {
 		List<Chunk> results = new ArrayList<>();
 		for (Chunk ck : listChunk) {
 			// l'unita deve corrispondere perfettamente
-			if (ck.getType().equals(unit)) {
+			if (ck.getUnit().equals(unit)) {
 				results.add(ck);
 			}
 		}
