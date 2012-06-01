@@ -98,6 +98,30 @@ public class DictionaryManager {
 	}
 
 	/**
+	 * Metodo utilizzabile solo quando siamo in modalità {@link #ONLINE_MODE}.
+	 * Il metodo esegue il refresh senza salvare i dati sul disco.
+	 * 
+	 * @throws IOException
+	 * @return restituisce True se il refresh è stato completato, False se non è
+	 *         possibile eseguire il refresh perchè siamo in modalità
+	 *         {@link #OFFLINE_MODE}
+	 */
+	public boolean refreshDictionary() throws IOException {
+		if (mode == OFFLINE_MODE) {
+			// si svuota il buffer
+			buffer.clear();
+			return false;
+		} else {
+			// prima bisogna aggiornare, si deve creare un dictionaryData con la
+			// path attuale
+			data.refreshData(new DictionaryData(this.path));
+			// si svuota il buffer
+			buffer.clear();
+			return true;
+		}
+	}
+
+	/**
 	 * Metodo che ANNULLA TUTTE LE MODIFICHE fatte al dictionary dal
 	 * caricamento. Per fare ciò ricrea l'oggetto {@link #data} con la path del
 	 * dizionario senza prima chiamare
