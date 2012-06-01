@@ -388,21 +388,27 @@ public class DictionaryManager {
 	 * 
 	 * @param mode
 	 *            nuova modalità da impostare
-	 * @return si ritorna True se il cambio è avvenutop con successo, False se
-	 *         il valore di _mode non era valido
+	 * @return si ritorna True se il cambio è avvenuto con successo, False se la
+	 *         modalità era già fissata sul valore passato o il valore non era
+	 *         valido.
 	 * @throws IOException
 	 *             viene lanciata l'eccezione in caso il salvataggio provochi
 	 *             dei problemi
 	 */
 	public boolean changeMode(int _mode) throws IOException {
-		// prima si salva il dizionario
-		this.saveDictionary();
 		// ora si imposta la modalità
 		if (_mode == OFFLINE_MODE || _mode == ONLINE_MODE) {
-			// si imposta
-			this.mode = _mode;
-			return true;
-		}else{
+			if (_mode == this.mode) {
+				// si ritorna
+				return false;
+			} else {
+				// si salva
+				this.saveDictionary();
+				// si imposta
+				this.mode = _mode;
+				return true;
+			}
+		} else {
 			return false;
 		}
 	}
