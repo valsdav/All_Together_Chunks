@@ -127,7 +127,7 @@ public class AllTogetherChunksCommandLine {
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
 			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
-					+ "(if the chunk already exists it refresh the datas without deleting definitions",
+					+ "(if the chunk already exists it refresh the the definitions)",
 			"add: shortcut for command 'addchunk'",
 			"modifychunk: it displays a prompt to insert datas to modify an existing chunk",
 			"modify: shortcut for command 'modifychunk'",
@@ -135,8 +135,9 @@ public class AllTogetherChunksCommandLine {
 			"delete: shortcut for command 'deletechunk",
 			"definition +chunk: diplays the definitions of the given chunk",
 			"def: shortcut for command 'definition'",
-			"setmode +offline/online: it changes the mode of the program, you can insert offline or online"
-					+ " to disable or enable the refresh of a shared dictionary",
+			"setmode +offline/online: it changes the mode of the program, you can insert offline or online. (Default mode is online)"
+					+ " to disable or enable the refresh of a shared dictionary"+
+					"\n-->  setmode >>> setmode: without parameters it shows the current mode of the program",
 			"exit: program will terminate" };
 	/**
 	 * Mappa che incapsula tutti i comandi disponibili con relativa
@@ -491,10 +492,21 @@ public class AllTogetherChunksCommandLine {
 				// ora si controlla il valore passato
 				switch (arg) {
 				case "offline":
-					dictionary.changeMode(DictionaryManager.OFFLINE_MODE);
+					if (dictionary.changeMode(DictionaryManager.OFFLINE_MODE)) {
+						out.println("Mode successfully changed!");
+					} else {
+						out.println("Mode already offline!");
+					}
 					break;
 				case "online":
-					dictionary.changeMode(DictionaryManager.ONLINE_MODE);
+					if (dictionary.changeMode(DictionaryManager.ONLINE_MODE)) {
+						out.println("Mode successfully changed!");
+					} else {
+						out.println("Mode already online!");
+					}
+					break;
+				case "":
+//					out.println("Current mode:  " + )
 				}
 				break;
 			}
