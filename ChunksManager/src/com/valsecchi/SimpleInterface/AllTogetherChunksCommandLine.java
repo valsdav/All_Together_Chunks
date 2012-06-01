@@ -99,7 +99,7 @@ public class AllTogetherChunksCommandLine {
 	/**
 	 * Variabile che memorizza il comando undochanges
 	 */
-	private static final String UNDO = "undochanges";
+	private static final String UNDO_ALL = "undoallchanges";
 	/**
 	 * Variabile che memorizza il comando exit
 	 */
@@ -114,7 +114,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, CREATE, REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
+			SAVE, CREATE, REFRESH, UNDO_ALL, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
 			MODIFY, DELETE_CHUNK, DELETE, DEFIN, DEF, SETMODE, MODE, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
@@ -127,7 +127,7 @@ public class AllTogetherChunksCommandLine {
 			"save: it saves and refreshes the current dictionary",
 			"create +path: it creates a new dictionary in the given 'path'",
 			"refresh: it only refreshes the current dictionary if the mode is ONLINE",
-			"undochanges: it deletes all the changes you have done since dictionary was loaded",
+			"undoallchanges: it deletes all the changes you have done since dictionary was loaded",
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
 			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
@@ -495,7 +495,7 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case UNDO:{
+			case UNDO_ALL:{
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
