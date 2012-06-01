@@ -41,6 +41,10 @@ public class AllTogetherChunksCommandLine {
 	 */
 	private static final String OPEN_DICTIONARY = "open";
 	/**
+	 * Variabile che memorizza il comando create
+	 */
+	private static final String CREATE = "create";
+	/**
 	 * Variabile che memorizza il comando find
 	 */
 	private static final String FIND = "find";
@@ -102,7 +106,7 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
+			SAVE, CREATE,REFRESH, UNDO, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
 			DELETE_CHUNK, DELETE, DEFIN, DEF, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
@@ -113,6 +117,7 @@ public class AllTogetherChunksCommandLine {
 					+ "\n-->  help >>> help: it displays all commands available with instructions",
 			"open +path: it loads the Chunks Dictionary in the 'path' you have written",
 			"save: it saves and refreshes the current dictionary",
+			"create +path: it creates a new dictionary in the given 'path'",
 			"refresh: it only refreshes the current dictionary if the mode is ONLINE",
 			"undochanges: it deletes all the changes you have done since dictionary was loaded",
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
@@ -235,6 +240,20 @@ public class AllTogetherChunksCommandLine {
 				} else {
 					out.println("Please enter 'open +path' to load a dictionary...");
 				}
+				break;
+			}
+			case CREATE: {
+				if(arg.equals("")){
+					out.println("Please try againt and insert a valid path...");
+					continue;
+				}
+				if(dictionary.CreateDictionary(arg)){
+					out.println("New dictionary successfully created");
+				}
+				else{
+					out.println("Error! Try again");
+				}
+				//si crea un nuovo dizionario
 				break;
 			}
 			case FIND: {
