@@ -480,9 +480,17 @@ public class AllTogetherChunksCommandLine {
 							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
+				//controllo modalità
+				if(dictionary.getMode()== DictionaryManager.OFFLINE_MODE){
+					//allora si esce
+					out.println("You cannot use this command! Dictionary is now set to OFFLINE mode.\n" +
+							" To use command 'refresh' please set first the mode ONLINE with the command 'setmode'");
+					continue;
+				}
 				// si fa il refresh
 				if (dictionary != null && dictionary.isLoaded()) {
 					out.println("Dictionary refreshing in progress...");
+					dictionary.refreshDictionary();
 					out.println("Dictionary successfully refreshed !");
 				}
 				break;
@@ -527,14 +535,14 @@ public class AllTogetherChunksCommandLine {
 				switch (arg) {
 				case "offline":
 					if (dictionary.changeMode(DictionaryManager.OFFLINE_MODE)) {
-						out.println("Mode successfully changed!");
+						out.println("Mode successfully changed to OFFLINE!");
 					} else {
 						out.println("Mode already OFFLINE!");
 					}
 					break;
 				case "online":
 					if (dictionary.changeMode(DictionaryManager.ONLINE_MODE)) {
-						out.println("Mode successfully changed!");
+						out.println("Mode successfully changed to ONLINE!");
 					} else {
 						out.println("Mode already ONLINE!");
 					}
