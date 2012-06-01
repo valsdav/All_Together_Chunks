@@ -415,12 +415,21 @@ public class DictionaryManager {
 
 	/**
 	 * Metodo che esponde il {@link #mode} corrente del dictionary manager
+	 * 
 	 * @return
 	 */
-	public int getMode(){
+	public int getMode() {
 		return this.mode;
 	}
-	
+
+	/**
+	 * Metodo che restituisce il nome del dizionario rappresentato da questo
+	 * oggetto DictionaryManager
+	 */
+	public String getDictionaryName() {
+		return this.dictName;
+	}
+
 	/**
 	 * Metodo che compara due liste di definizioni per determinare quelle da
 	 * eliminare in old
