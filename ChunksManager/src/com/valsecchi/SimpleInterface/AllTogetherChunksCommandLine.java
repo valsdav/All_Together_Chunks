@@ -114,8 +114,9 @@ public class AllTogetherChunksCommandLine {
 	 * {@link #COMMANDS_MAP}
 	 */
 	private static final String[] COMMANDS_LIST = { HELP, OPEN_DICTIONARY,
-			SAVE, CREATE, REFRESH, UNDO_ALL, FIND, ADD_CHUNK, ADD, MODIFY_CHUNK,
-			MODIFY, DELETE_CHUNK, DELETE, DEFIN, DEF, SETMODE, MODE, EXIT };
+			SAVE, CREATE, REFRESH, UNDO_ALL, FIND, ADD_CHUNK, ADD,
+			MODIFY_CHUNK, MODIFY, DELETE_CHUNK, DELETE, DEFIN, DEF, SETMODE,
+			MODE, EXIT };
 	/**
 	 * Array di stringe che contiene le istruzioni dei vari comandi che saranno
 	 * poi inseriti in {@link #COMMANDS_MAP}
@@ -160,13 +161,35 @@ public class AllTogetherChunksCommandLine {
 	public static void main(String[] args) throws IOException {
 		// si caricano i comandi
 		setupInstructions();
-
-		out.println("Welcome to All Together Chunks!\nEnter a command to start "
-				+ "or enter help for a list of all commands available...");
-
 		// viene creato il lettore dell'input della console
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				System.in));
+		// messaggio di benvenuto
+		out.println("Welcome to All Together Chunks!\nEnter a command to start "
+				+ "or enter help for a list of all commands available...");
+		// lettura argomnti da riga di comando
+		if (args != null && args.length != 0 && !args[0].equals("")) {
+			// se c'è una path valida si apre il dizionario
+			Path file = Paths.get(args[0]);
+			if (Files.exists(file)) {
+				// prima si fa il refresh
+				if (dictionary != null && dictionary.isLoaded()) {
+					out.println("Dictionary saving and refreshing in progress...");
+					dictionary.saveDictionary();
+					out.println("Dictionary  successfully saved and refreshed!");
+				}
+				// allora si apre il dizionario
+				dictionary = new DictionaryManager(
+						DictionaryManager.ONLINE_MODE, Paths.get(args[0])
+								.getFileName().toString(), file);
+				// ora si carica
+				out.println("Dictionary loading in progress..");
+				dictionary.loadDictionary();
+				out.println("Dictionary loaded successfully!");
+				// si imposta che il dizionario è stato caricato
+				dictLoaded = true;
+			}
+		}
 		// comando inserito
 		String command = "";
 		// inizio loop
@@ -235,6 +258,13 @@ public class AllTogetherChunksCommandLine {
 					}
 					// si controlla che esiste
 					if (Files.exists(file)) {
+						// prima si deve salvare
+						// si fa il refresh
+						if (dictionary != null && dictionary.isLoaded()) {
+							out.println("Dictionary saving and refreshing in progress...");
+							dictionary.saveDictionary();
+							out.println("Dictionary  successfully saved and refreshed!");
+						}
 						// esiste si carica il dizionario
 						// di default è in modalità online
 						dictionary = new DictionaryManager(
@@ -260,7 +290,8 @@ public class AllTogetherChunksCommandLine {
 					continue;
 				}
 				if (DictionaryManager.CreateDictionary(arg)) {
-					out.println("New dictionary successfully created");
+					out.println("New dictionary successfully created in: "
+							+ arg);
 				} else {
 					out.println("Error! Try again");
 				}
@@ -346,9 +377,10 @@ public class AllTogetherChunksCommandLine {
 				// ora si crea il nuovo chunk
 				if (dictionary.addChunk(chunkWord, type, unit, defs)) {
 					// si dice che è stato aggiunto
-					out.println("Chunk added successfully!");
+					out.println("Chunk: " + chunkWord + " added successfully!");
 				} else {
-					out.println("Chunk already in dictionary, definitions refreshed!");
+					out.println("Chunk: " + chunkWord
+							+ " already in dictionary, definitions refreshed!");
 				}
 				break;
 			}
@@ -389,25 +421,27 @@ public class AllTogetherChunksCommandLine {
 				}
 				// ora si chima il dizionario
 				if (dictionary.modifyChunk(chunkWord, newChunk, defs)) {
-					out.println("Chunk modified successfully!");
+					out.println("Chunk: " + chunkWord
+							+ " modified successfully to: " + newChunk + "!");
 					continue;
 				} else {
 					// se è stato ritornato false significa che il chunk non
 					// esiste
 					// si chiede se aggiungerlo
-					out.println("Chunk not exists!");
+					out.println("Chunk: " + chunkWord + " not exists!");
 					out.print("Do you want to add it? (y/n):  ");
 					String answer = reader.readLine();
 					if (answer.equals("") || answer.equals("n")) {
-						out.println("Chunk not added!");
+						out.println("Chunk: " + chunkWord + " not added!");
 					} else if (answer.equals("y")) {
 						out.print("--> type:  ");
 						String type = reader.readLine().trim().toLowerCase();
 						out.print("--> unit:  ");
 						String unit = reader.readLine().trim().toLowerCase();
 						// si aggiunge
-						dictionary.addChunk(newChunk, type, unit, defs);
-						out.println("Chunk added successfully!");
+						dictionary.addChunk(chunkWord, type, unit, defs);
+						out.println("Chunk: " + chunkWord
+								+ " added successfully!");
 					}
 				}
 				break;
@@ -425,9 +459,10 @@ public class AllTogetherChunksCommandLine {
 					continue;
 				}
 				if (dictionary.removeChunk(arg)) {
-					out.println("Chunk deleted successfully!");
+					out.println("Chunk: " + arg + " deleted successfully!");
 				} else {
-					out.println("Chunk doesn't exist! Please try again...");
+					out.println("Chunk: " + arg
+							+ " doesn't exist! Please try again...");
 				}
 				break;
 			}
@@ -450,11 +485,16 @@ public class AllTogetherChunksCommandLine {
 				// si ricavano le definizioni
 				List<String> defs = dictionary.getDefinitions(wordToSearch);
 				if (defs != null) {
+					// prima si scrivono le caratteristiche del chunk
+					String[] attr = dictionary.getChunkAttributes(wordToSearch);
+					out.println("   >Chunk:   " +wordToSearch +"    --type: " + attr[1]
+							+ "    --unit: " + attr[2]);
+					out.println("   >Definitions:");
 					for (String s : defs) {
 						out.println("    -- " + s);
 					}
 				} else {
-					out.println("Chunk not founded!");
+					out.println("Chunk: " + arg + " not exists!");
 				}
 				break;
 			}
@@ -480,11 +520,11 @@ public class AllTogetherChunksCommandLine {
 							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
-				//controllo modalità
-				if(dictionary.getMode()== DictionaryManager.OFFLINE_MODE){
-					//allora si esce
-					out.println("You cannot use this command! Dictionary is now set to OFFLINE mode.\n" +
-							" To use command 'refresh' please set first the mode ONLINE with the command 'setmode'");
+				// controllo modalità
+				if (dictionary.getMode() == DictionaryManager.OFFLINE_MODE) {
+					// allora si esce
+					out.println("You cannot use this command! Dictionary is now set to OFFLINE mode.\n"
+							+ " To use command 'refresh' please set first the mode ONLINE with the command 'setmode'");
 					continue;
 				}
 				// si fa il refresh
@@ -495,36 +535,32 @@ public class AllTogetherChunksCommandLine {
 				}
 				break;
 			}
-			case UNDO_ALL:{
+			case UNDO_ALL: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
 							+ "dictionary.\nPlease open a dictionary with 'open +path'...");
 					continue;
 				}
-				//si chiede prima conferma
+				// si chiede prima conferma
 				out.print("Are you sure to delete all the changes you have made during this session? (y/n)");
 				String ans = reader.readLine();
-				if(ans.equals("y")){
-					//allora si annullano le modifiche
-					if(dictionary.undoChanges()){
+				if (ans.equals("y")) {
+					// allora si annullano le modifiche
+					if (dictionary.undoChanges()) {
 						out.println("Changes successfully deleted!");
-					}
-					else{
+					} else {
 						out.println("Error! Please try again...");
 					}
-				}
-				else if(ans.equals("n")){
+				} else if (ans.equals("n")) {
 					out.println("Operation cancelled!");
-				}
-				else{
+				} else {
 					out.println("Please try again and insert a valid answer...");
 				}
 				break;
 			}
-			case SETMODE: 
-			case MODE:
-			{
+			case SETMODE:
+			case MODE: {
 				// si controlla che sia caricato un dizionario
 				if (dictLoaded == false) {
 					out.println("You cannot use this command unless you open a "
