@@ -339,7 +339,6 @@ public class DictionaryManager {
 					newDefinitions);
 			return true;
 		}
-
 	}
 
 	/**
@@ -489,5 +488,4 @@ public class DictionaryManager {
 		}
 		return true;
 	}
-
 }
