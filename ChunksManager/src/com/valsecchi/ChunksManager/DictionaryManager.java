@@ -67,7 +67,11 @@ public class DictionaryManager {
 	 *             lanciata l'eccezione
 	 */
 	public boolean loadDictionary() throws IOException {
-		return this.data.loadData();
+		if (this.data.loadData() != null) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -124,7 +128,7 @@ public class DictionaryManager {
 		} else {
 			// prima bisogna aggiornare, si deve creare un dictionaryData con la
 			// path attuale
-			data.refreshData(new DictionaryData(this.path));
+			data.refreshData(new DictionaryData(this.path).loadData());
 			// si svuota il buffer
 			buffer.clear();
 			return true;
