@@ -787,7 +787,7 @@ public class DictionaryData {
 		// devono essere tutte dello stesso chunk
 		// si ricava la lista dei definizioni esistenti
 		// si controlla che ci sia l'elemnto con questo hash
-		if (this.defsToDelete.containsKey(hash) == false) {
+		if (this.defsMap.containsKey(hash) == false) {
 			return null;
 		}
 		List<Definition> founded = this.getDefinitions(hash);
