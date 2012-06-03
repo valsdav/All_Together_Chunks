@@ -286,7 +286,7 @@ public class AllTogetherChunksCommandLine {
 			}
 			case CREATE: {
 				if (arg.equals("")) {
-					out.println("Please try againt and insert a valid path...");
+					out.println("Please try again and insert a valid path...");
 					continue;
 				}
 				if (DictionaryManager.CreateDictionary(arg)) {
@@ -377,7 +377,7 @@ public class AllTogetherChunksCommandLine {
 				// ora si crea il nuovo chunk
 				if (dictionary.addChunk(chunkWord, type, unit, defs)) {
 					// si dice che è stato aggiunto
-					out.println("Chunk: " + chunkWord + " added successfully!");
+					out.println("Chunk: " + chunkWord + " successfully added!");
 				} else {
 					out.println("Chunk: " + chunkWord
 							+ " already in dictionary, definitions refreshed!");
