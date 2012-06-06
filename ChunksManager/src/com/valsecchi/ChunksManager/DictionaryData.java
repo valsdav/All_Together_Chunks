@@ -52,14 +52,13 @@ public class DictionaryData {
 	 */
 	private Map<String, List<Definition>> defsToDelete;
 	private List<String> chunksToDelete;
-	private boolean dictionaryLoaded = false;
 	private Path dictPath;
 
 	/**
 	 * Costruttore che richiede la path del dizionario.
 	 * 
 	 */
-	public DictionaryData(Path _path) {
+	private DictionaryData(Path _path) {
 		chunksMap = new HashMap<>();
 		defsMap = new HashMap<>();
 		defsToDelete = new HashMap<>();
@@ -68,24 +67,54 @@ public class DictionaryData {
 	}
 
 	/**
+	 * Metodo factory che crea un nuovo oggetto dizionario e lo carica anche in
+	 * memoria
+	 * 
+	 * @param _path
+	 *            percorso del dizionario da caricare
+	 * @return restituisce il DictionaryData creato e caricato
+	 * @throws Exception
+	 *             IOException vengono lanciate le eccezioni in caso di errori
+	 *             di lettura del file o errori xml
+	 */
+	public static DictionaryData loadData(Path _path) throws Exception,
+			IOException {
+		return new DictionaryData(_path).loadData();
+	}
+
+	/**
+	 * Il metodo crea e restituisce un DizionaryData vuoto e pronto all'uso.
+	 * Quindi il metodo imposta {@link #isDictionaryLoaded()} a True senza
+	 * l'utilizzo di {@link #loadData()} poichè il dizionario è vuoto. Il metodo
+	 * in pratica crea un nuovo dizionario nel percorso specificato
+	 * 
+	 * @param _path
+	 *            percorso in cui creare il nuovo dizionario
+	 * @return restituisce il dictionary creato e pronto all'uso
+	 */
+	public static DictionaryData createVoidDictionary(Path _path) {
+		DictionaryData current = new DictionaryData(_path);
+		return current;
+	}
+
+	/**
 	 * Metodo che carica in memoria il dizionario memorizzaro in
 	 * {@link #dictPath}. E' importante che il client di questo metodo controlli
 	 * precedentemente che il file dizionario esiste altrimenti il metodo
 	 * rilancerà l'eccezione IOException.
 	 * 
-	 * @return ritorna il dizionaro caricato, null se non è stato caricato correttamente
+	 * @return ritorna il dizionaro caricato, null se non è stato caricato
+	 *         correttamente
 	 * @throws IOException
 	 *             l'eccezione viene lanciata se si hanno problemi nella lettura
 	 *             del file dizionario.
+	 * @throws Exception
+	 *             eccezione generica generata per errori xml
 	 */
-	public DictionaryData loadData() throws IOException {
+	private DictionaryData loadData() throws IOException, Exception {
 		SAXBuilder builder = new SAXBuilder();
 		Document doc;
-		try {
-			doc = builder.build(dictPath.toFile());
-		} catch (JDOMException e) {
-			return null;
-		}
+		doc = builder.build(dictPath.toFile());
 		Element root = doc.getRootElement();
 		// si ricava la lista di chunks
 		List<Element> _chunks = root.getChildren("Chunks");
@@ -110,7 +139,6 @@ public class DictionaryData {
 			// si aggiunge alla lista
 			this.addDefinition(newDef);
 		}
-		dictionaryLoaded = true;
 		// il processo è completato
 		return this;
 	}
@@ -885,15 +913,6 @@ public class DictionaryData {
 		}
 		// si restituisce il risultato
 		return to_del;
-	}
-
-	/**
-	 * Proprietà che indica se il dizionario è stato caricato
-	 * 
-	 * @return True se il dizionario è stato caricato correttamente in memoria.
-	 */
-	public boolean isDictionaryLoaded() {
-		return this.dictionaryLoaded;
 	}
 
 	/**

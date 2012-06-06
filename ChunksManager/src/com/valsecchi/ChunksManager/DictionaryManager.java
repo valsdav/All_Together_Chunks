@@ -34,6 +34,7 @@ public class DictionaryManager {
 	private Map<String, Chunk> buffer;
 	private String dictName;
 	private int mode;
+	private boolean isDictionaryLoaded = false;
 	public static final int NULL_MODE = 0;
 	public static final int OFFLINE_MODE = 1;
 	public static final int ONLINE_MODE = 2;
@@ -54,24 +55,27 @@ public class DictionaryManager {
 		mode = _mode;
 		dictName = name;
 		path = _path;
-		// si crea l'oggetto che gestisce i dati
-		data = new DictionaryData(path);
 	}
 
 	/**
-	 * Metodo che carica il database il memoria nell'oggetto {@link #data}
+	 * Metodo che carica il database in memoria nell'oggetto {@link #data}. La
+	 * path del database è memorizzata nel costruttore della classe
 	 * 
-	 * @return True se l'operazione va a buon fine
-	 * @throws IOException
-	 *             se ci sono problemi nella lettura del file dizionario viene
-	 *             lanciata l'eccezione
+	 * @return True se l'operazione va a buon fine, False se ci sono stati degli
+	 *         errori
 	 */
-	public boolean loadDictionary() throws IOException {
-		if (this.data.loadData() != null) {
-			return true;
-		} else {
+	public boolean loadDictionary() {
+		try {
+			this.data = DictionaryData.loadData(path);
+		} catch (IOException i) {
+			this.isDictionaryLoaded= false;
+			return false;
+		} catch (Exception e) {
+			this.isDictionaryLoaded= false;
 			return false;
 		}
+		this.isDictionaryLoaded= true;
+		return true;
 	}
 
 	/**
@@ -86,9 +90,9 @@ public class DictionaryManager {
 	 * 
 	 * @return si ritorna True se è stato salvato, False se il dizionario non è
 	 *         caricato
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public boolean saveDictionary() throws IOException {
+	public boolean saveDictionary() throws Exception {
 		if (isLoaded() == true) {
 			if (mode == OFFLINE_MODE) {
 				// allora si scrive e basta
@@ -97,7 +101,7 @@ public class DictionaryManager {
 				// prima bisogna aggiornare, si deve creare un dictionaryData
 				// con la
 				// path attuale
-				data.refreshData(new DictionaryData(this.path));
+				data.refreshData(DictionaryData.loadData(path));
 				// ora si riscrive
 				data.writeData(this.path);
 			}
@@ -115,12 +119,12 @@ public class DictionaryManager {
 	 * Metodo utilizzabile solo quando siamo in modalità {@link #ONLINE_MODE}.
 	 * Il metodo esegue il refresh senza salvare i dati sul disco.
 	 * 
-	 * @throws IOException
 	 * @return restituisce True se il refresh è stato completato, False se non è
 	 *         possibile eseguire il refresh perchè siamo in modalità
 	 *         {@link #OFFLINE_MODE}
+	 * @throws Exception
 	 */
-	public boolean refreshDictionary() throws IOException {
+	public boolean refreshDictionary() throws Exception {
 		if (mode == OFFLINE_MODE) {
 			// si svuota il buffer
 			buffer.clear();
@@ -128,7 +132,7 @@ public class DictionaryManager {
 		} else {
 			// prima bisogna aggiornare, si deve creare un dictionaryData con la
 			// path attuale
-			data.refreshData(new DictionaryData(this.path).loadData());
+			data.refreshData(DictionaryData.loadData(path));
 			// si svuota il buffer
 			buffer.clear();
 			return true;
@@ -145,15 +149,8 @@ public class DictionaryManager {
 	 *         False se ci sono dei problemi di IO.
 	 */
 	public boolean undoChanges() {
-		// si ricrea data
-		data = new DictionaryData(this.path);
-		// si caricano i dati
-		try {
-			data.loadData();
-			return true;
-		} catch (IOException e) {
-			return false;
-		}
+		// si chiama loadDictionary senza fare prima refresg
+		return this.loadDictionary();
 	}
 
 	/**
@@ -394,11 +391,9 @@ public class DictionaryManager {
 	 * @return si ritorna True se il cambio è avvenuto con successo, False se la
 	 *         modalità era già fissata sul valore passato o il valore non era
 	 *         valido.
-	 * @throws IOException
-	 *             viene lanciata l'eccezione in caso il salvataggio provochi
-	 *             dei problemi
+	 * @throws Exception 
 	 */
-	public boolean changeMode(int _mode) throws IOException {
+	public boolean changeMode(int _mode) throws Exception {
 		// ora si imposta la modalità
 		if (_mode == OFFLINE_MODE || _mode == ONLINE_MODE) {
 			if (_mode == this.mode) {
@@ -467,7 +462,7 @@ public class DictionaryManager {
 	 * @return ritorna True se il dizionario è caricato in memoria
 	 */
 	public boolean isLoaded() {
-		return data.isDictionaryLoaded();
+		return this.isDictionaryLoaded;
 	}
 
 	/**
