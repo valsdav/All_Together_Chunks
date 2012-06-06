@@ -64,18 +64,17 @@ public class DictionaryManager {
 	 * @return True se l'operazione va a buon fine, False se ci sono stati degli
 	 *         errori
 	 */
-	public boolean loadDictionary() {
+	public void loadDictionary() throws Exception,IOException {
 		try {
 			this.data = DictionaryData.loadData(path);
 		} catch (IOException i) {
 			this.isDictionaryLoaded= false;
-			return false;
+			throw (new IOException());
 		} catch (Exception e) {
 			this.isDictionaryLoaded= false;
-			return false;
+			throw (new Exception());
 		}
 		this.isDictionaryLoaded= true;
-		return true;
 	}
 
 	/**
@@ -145,12 +144,12 @@ public class DictionaryManager {
 	 * dizionario senza prima chiamare
 	 * {@link DictionaryData#refreshData(DictionaryData)}.
 	 * 
-	 * @return ritorna True se le operazioni vengono completate con successo,
-	 *         False se ci sono dei problemi di IO.
+	 * @throws Exception 
+	 * @throws IOException 
 	 */
-	public boolean undoChanges() {
+	public void undoChanges() throws IOException, Exception {
 		// si chiama loadDictionary senza fare prima refresg
-		return this.loadDictionary();
+		this.loadDictionary();
 	}
 
 	/**
