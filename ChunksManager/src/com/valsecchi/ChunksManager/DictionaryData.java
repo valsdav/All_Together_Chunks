@@ -73,18 +73,18 @@ public class DictionaryData {
 	 * precedentemente che il file dizionario esiste altrimenti il metodo
 	 * rilancerà l'eccezione IOException.
 	 * 
-	 * @return ritorna True se il dizionario è stato caricato correttamente
+	 * @return ritorna il dizionaro caricato, null se non è stato caricato correttamente
 	 * @throws IOException
 	 *             l'eccezione viene lanciata se si hanno problemi nella lettura
 	 *             del file dizionario.
 	 */
-	public boolean loadData() throws IOException {
+	public DictionaryData loadData() throws IOException {
 		SAXBuilder builder = new SAXBuilder();
 		Document doc;
 		try {
 			doc = builder.build(dictPath.toFile());
 		} catch (JDOMException e) {
-			return false;
+			return null;
 		}
 		Element root = doc.getRootElement();
 		// si ricava la lista di chunks
@@ -112,7 +112,7 @@ public class DictionaryData {
 		}
 		dictionaryLoaded = true;
 		// il processo è completato
-		return true;
+		return this;
 	}
 
 	/**
@@ -787,7 +787,7 @@ public class DictionaryData {
 		// devono essere tutte dello stesso chunk
 		// si ricava la lista dei definizioni esistenti
 		// si controlla che ci sia l'elemnto con questo hash
-		if (this.defsToDelete.containsKey(hash) == false) {
+		if (this.defsMap.containsKey(hash) == false) {
 			return null;
 		}
 		List<Definition> founded = this.getDefinitions(hash);

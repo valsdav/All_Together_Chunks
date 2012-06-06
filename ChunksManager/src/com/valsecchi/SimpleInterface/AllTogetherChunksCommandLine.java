@@ -132,7 +132,7 @@ public class AllTogetherChunksCommandLine {
 			"find +chunk: it searches for a chunk that contains the word 'chunk'"
 					+ "\n-->  find >>> find: it displays a prompt to search for a chunk with further parameters",
 			"addchunk: it displays a prompt to insert datas to add a new chunk;\n              "
-					+ "(if the chunk already exists it refresh the the definitions)",
+					+ "(if the chunk already exists it refresh the definitions)",
 			"add: shortcut for command 'addchunk'",
 			"modifychunk: it displays a prompt to insert datas to modify an existing chunk",
 			"modify: shortcut for command 'modifychunk'",
@@ -194,6 +194,7 @@ public class AllTogetherChunksCommandLine {
 		String command = "";
 		// inizio loop
 		while (canContinue) {
+			out.println();
 			out.print(">>>");
 			command = reader.readLine();
 			// se non sono stati inseriti comandi
