@@ -13,6 +13,8 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import com.valsecchi.ChunksManager.exception.DictionaryAlreadyLoadedException;
+
 /**
  * La classe DictionaryManager fa da ponte tra i dati contenuti in un oggetto
  * DictionaryData, e l'interfaccia grafica.
@@ -59,10 +61,9 @@ public class DictionaryManager {
 
 	/**
 	 * Metodo che carica il database in memoria nell'oggetto {@link #data}. La
-	 * path del database è memorizzata nel costruttore della classe
+	 * path del database è memorizzata nel costruttore della classe.
 	 * 
-	 * @return True se l'operazione va a buon fine, False se ci sono stati degli
-	 *         errori
+	 * @throws Exception,IOException lancia le eccezioni in caso di errore
 	 */
 	public void loadDictionary() throws Exception,IOException {
 		try {
@@ -131,6 +132,7 @@ public class DictionaryManager {
 		} else {
 			// prima bisogna aggiornare, si deve creare un dictionaryData con la
 			// path attuale
+			//il caricamento del vecchio dizionario può provocare errori
 			data.refreshData(DictionaryData.loadData(path));
 			// si svuota il buffer
 			buffer.clear();
@@ -148,7 +150,7 @@ public class DictionaryManager {
 	 * @throws IOException 
 	 */
 	public void undoChanges() throws IOException, Exception {
-		// si chiama loadDictionary senza fare prima refresg
+		// si chiama loadDictionary senza fare prima refresh
 		this.loadDictionary();
 	}
 
